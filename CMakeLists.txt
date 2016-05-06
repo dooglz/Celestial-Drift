@@ -69,17 +69,49 @@ link_directories("${CMAKE_SOURCE_DIR}/lib/x64/" "${CMAKE_SOURCE_DIR}/lib/x64/${c
 #target_link_libraries (celestial_drift_main "${CMAKE_SOURCE_DIR}/lib/x64/Release/ssleay32MD.lib")
 endif(MSVC)
 
-find_library (GLFW glfw3 
+find_library (GLFW 
+  glfw3
+ PATHS 
+ "${CMAKE_SOURCE_DIR}/lib/x64/Release/"
+ "${CMAKE_SOURCE_DIR}/lib/x64/Debug/" 
+ "${CMAKE_SOURCE_DIR}/lib/x64/" 
+ NO_DEFAULT_PATH)
+ message(${GLFW})
+ 
+ find_library (GLEW 
+   glew32
  PATHS 
  "${CMAKE_SOURCE_DIR}/lib/x64/Release/"
  "${CMAKE_SOURCE_DIR}/lib/x64/Debug/" 
  "${CMAKE_SOURCE_DIR}/lib/x64/" 
  NO_DEFAULT_PATH)
  
- message(${GLFW})
+ find_library (FRTYP 
+   freetype
+ PATHS 
+ "${CMAKE_SOURCE_DIR}/lib/x64/Release/"
+ "${CMAKE_SOURCE_DIR}/lib/x64/Debug/" 
+ "${CMAKE_SOURCE_DIR}/lib/x64/" 
+ NO_DEFAULT_PATH)
  
-TARGET_LINK_LIBRARIES(celestial_drift_main "opengl32") 
-TARGET_LINK_LIBRARIES(celestial_drift_main ${GLFW}) 
+ find_library (FRYTPGL 
+   freetype-gl
+ PATHS 
+ "${CMAKE_SOURCE_DIR}/lib/x64/Release/"
+ "${CMAKE_SOURCE_DIR}/lib/x64/Debug/" 
+ "${CMAKE_SOURCE_DIR}/lib/x64/" 
+ NO_DEFAULT_PATH)
+ 
+  find_library (FMOD 
+   fmod
+ PATHS 
+ "${CMAKE_SOURCE_DIR}/lib/x64/Release/"
+ "${CMAKE_SOURCE_DIR}/lib/x64/Debug/" 
+ "${CMAKE_SOURCE_DIR}/lib/x64/" 
+ NO_DEFAULT_PATH)
+ 
+ 
+TARGET_LINK_LIBRARIES(celestial_drift_main ${GLFW} ${GLEW} ${FRTYP} ${FRYTPGL} ${FMOD} "opengl32") 
 
 
 
