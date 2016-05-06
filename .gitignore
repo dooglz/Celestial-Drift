@@ -288,3 +288,4 @@ _Pvt_Extensions
 .idea/
 *.sln.iml
 *.share
+*.VC.db

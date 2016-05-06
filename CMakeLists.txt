@@ -27,7 +27,7 @@ endforeach ()
 ## file globbing ##############################################################
 ###############################################################################
 
-add_subdirectory(src)
+file(GLOB_RECURSE sources src/*.cpp src/*.h src/*.cl src/*.cu src/*.vert src/*.frag src/*.geom src/*.tess)
 
 ###############################################################################
 ## target definitions #########################################################
@@ -60,6 +60,15 @@ endif(NOT MSVC)
 # this lets me include files relative to the root src dir with a <> pair
 target_include_directories(celestial_drift_main PUBLIC "include")
 
+if (MSVC)
+# set the path to the library folder
+link_directories("${CMAKE_SOURCE_DIR}/lib/x64/" "${CMAKE_SOURCE_DIR}/lib/x64/${config}")
+# link the libraries to the executable
+#target_link_libraries (celestial_drift_main "${CMAKE_SOURCE_DIR}/lib/x64/Release/mpir.lib")
+#target_link_libraries (celestial_drift_main "${CMAKE_SOURCE_DIR}/lib/x64/Release/libeay32MD.lib")
+#target_link_libraries (celestial_drift_main "${CMAKE_SOURCE_DIR}/lib/x64/Release/ssleay32MD.lib")
+endif(MSVC)
+
 find_library (GLFW glfw3 
  PATHS 
  "${CMAKE_SOURCE_DIR}/lib/x64/Release/"
@@ -69,13 +78,8 @@ find_library (GLFW glfw3
  
  message(${GLFW})
  
+TARGET_LINK_LIBRARIES(celestial_drift_main "opengl32") 
 TARGET_LINK_LIBRARIES(celestial_drift_main ${GLFW}) 
 
-if (MSVC)
-# set the path to the library folder
-#link_directories("${CMAKE_SOURCE_DIR}/lib/x64/" "${CMAKE_SOURCE_DIR}/lib/x64/${config}")
-# link the libraries to the executable
-#target_link_libraries (celestial_drift_main "${CMAKE_SOURCE_DIR}/lib/x64/Release/mpir.lib")
-#target_link_libraries (celestial_drift_main "${CMAKE_SOURCE_DIR}/lib/x64/Release/libeay32MD.lib")
-#target_link_libraries (celestial_drift_main "${CMAKE_SOURCE_DIR}/lib/x64/Release/ssleay32MD.lib")
-endif(MSVC)
+
+
