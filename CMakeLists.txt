@@ -43,19 +43,24 @@ endforeach ()
 ###############################################################################
 
 file(GLOB_RECURSE sources src/*.cpp src/*.h src/*.cl src/*.cu src/*.vert src/*.frag src/*.geom src/*.tess)
+file(GLOB_RECURSE shaders resources/shaders/ogl/*.vert resources/shaders/ogl/*.frag resources/shaders/ogl/*.geom resources/shaders/ogl/*.tess)
+
 #message(STATUS "file list: ${sources}")
 
 ###############################################################################
 ## target definitions #########################################################
 ###############################################################################
 
-add_executable(celestial_drift_main ${sources})
-
+add_executable(celestial_drift_main ${sources} ${shaders})
+SOURCE_GROUP("Shaders" FILES ${shaders})
 add_custom_command(TARGET celestial_drift_main POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${REDISTS}
         $<TARGET_FILE_DIR:celestial_drift_main>)
-		
+add_custom_command(TARGET celestial_drift_main POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "resources"
+        $<TARGET_FILE_DIR:celestial_drift_main>"/resources")	
 if(MSVC)
 #MultiThreaded build for that speedy compilation
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")

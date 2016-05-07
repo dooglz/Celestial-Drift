@@ -2,11 +2,15 @@
 #include "common.h"
 #include <string>
 
-namespace fileIO {
+namespace fileIO {/*
 static const std::string filedirs[] = {
     "", "res/", "res/mdl/", "res/fonts/", "res/shaders/ogl/", "..\\", "..\\res/", "..\\res/mdl/",
     "..\\res/fonts/", "..\\res/shaders/ogl/", "/app0/", "/app0/res/", "/app0/res/mdl/",
     "/app0/res/fonts/", "/app0/res/shaders/ps4/"};
+*/
+static const std::string filedirs[] = {"", "resources/", "resources/mdl/", "resources/fonts/",
+                                       "resources/shaders/ogl/"};
+
 struct BinaryFile {
   static BinaryFile *Load(const std::string &name);
   size_t size;

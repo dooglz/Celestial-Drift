@@ -138,6 +138,7 @@ bool PC_Font::Init() {
     static size_t i = 0;
     fonts[i] = texture_font_new_from_file(atlas, s, filename);
     texture_font_load_glyphs(fonts[i], alphanum);
+    texture_atlas_upload(fonts[i]->atlas);
     ++i;
   }
 
