@@ -1,6 +1,7 @@
 #pragma once
 #include "assert.h"
 #include "log.h"
+#include "platform.h"
 #include <stdint.h>
 
 namespace version{
@@ -8,8 +9,6 @@ namespace version{
   const std::string Hash="0";
   const std::string CommitDate="0";
 }
-
-#define _PLATFORM_X64
 
 #if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
 

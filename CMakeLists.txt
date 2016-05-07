@@ -1,23 +1,38 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.3)
+
 project(celestial_drift)
 
-SET(OUTPUT_DIRECTORY "bin")
+SET(OUTPUT_DIRECTORY "bin/")
+if(MSVC)
+	if(${CMAKE_CL_64})
+		SET(PLATFORM "x64")
+		SET(REDISTS "redist/windows" "redist/x64")
+	else(${CMAKE_CL_64})
+		SET(PLATFORM "win32")
+		SET(REDISTS "redist/windows" "redist/win32")
+	endif(${CMAKE_CL_64})
+else(MSVC)
+	SET(PLATFORM "other")
+	SET(REDISTS "redist/other")
+endif(MSVC)
 
+ message("platform is " ${PLATFORM})
+ 
 foreach (config ${CMAKE_CONFIGURATION_TYPES})
     string (TOUPPER ${config} config)
     set_target_properties(${_project} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${config}"
-        ARCHIVE_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${config}"
-        LIBRARY_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${config}"
+        RUNTIME_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}"
+        ARCHIVE_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}"
+        LIBRARY_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}"
         #PDB_OUTPUT_DIRECTORY_${config} ${sym_path}
         VS_INTERMEDIATE_DIRECTORY_${config} "temp"
     )
-	SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${config}")
-	SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${config}")
-	SET( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${config}")
-	SET( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${config}")
-	SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${config}")
-	SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${config}")
+	SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}")
+	SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}")
+	SET( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}")
+	SET( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}")
+	SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}")
+	SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}")
 	SET( VS_INTERMEDIATE_DIRECTORY_${config} "temp/${config}")
 	
 endforeach ()
@@ -28,22 +43,23 @@ endforeach ()
 ###############################################################################
 
 file(GLOB_RECURSE sources src/*.cpp src/*.h src/*.cl src/*.cu src/*.vert src/*.frag src/*.geom src/*.tess)
+#message(STATUS "file list: ${sources}")
 
 ###############################################################################
 ## target definitions #########################################################
 ###############################################################################
-#message(STATUS "file list: ${sources}")
-# add the data to the target, so it becomes visible in some IDE
+
 add_executable(celestial_drift_main ${sources})
 
 add_custom_command(TARGET celestial_drift_main POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_SOURCE_DIR}/redist/"
+        ${REDISTS}
         $<TARGET_FILE_DIR:celestial_drift_main>)
 		
-# just for example add some compiler flags
-target_compile_options(celestial_drift_main PUBLIC -std=c++1y)
-if(NOT MSVC)
+if(MSVC)
+#MultiThreaded build for that speedy compilation
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+else(MSVC)
 	include(CheckCXXCompilerFlag)
 	CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 	CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
@@ -54,62 +70,46 @@ if(NOT MSVC)
 	else()
 		message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 	endif(COMPILER_SUPPORTS_CXX11)
-
-endif(NOT MSVC)
+endif(MSVC)
 
 # this lets me include files relative to the root src dir with a <> pair
 target_include_directories(celestial_drift_main PUBLIC "include")
 
-if (MSVC)
-# set the path to the library folder
-link_directories("${CMAKE_SOURCE_DIR}/lib/x64/" "${CMAKE_SOURCE_DIR}/lib/x64/${config}")
-# link the libraries to the executable
-#target_link_libraries (celestial_drift_main "${CMAKE_SOURCE_DIR}/lib/x64/Release/mpir.lib")
-#target_link_libraries (celestial_drift_main "${CMAKE_SOURCE_DIR}/lib/x64/Release/libeay32MD.lib")
-#target_link_libraries (celestial_drift_main "${CMAKE_SOURCE_DIR}/lib/x64/Release/ssleay32MD.lib")
-endif(MSVC)
+link_directories("${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/${config}")
+set(LIB_SEARCH_PATH "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/Release/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/Debug/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/" )
 
 find_library (GLFW 
   glfw3
  PATHS 
- "${CMAKE_SOURCE_DIR}/lib/x64/Release/"
- "${CMAKE_SOURCE_DIR}/lib/x64/Debug/" 
- "${CMAKE_SOURCE_DIR}/lib/x64/" 
+	${LIB_SEARCH_PATH}
  NO_DEFAULT_PATH)
  message(${GLFW})
  
  find_library (GLEW 
    glew32
  PATHS 
- "${CMAKE_SOURCE_DIR}/lib/x64/Release/"
- "${CMAKE_SOURCE_DIR}/lib/x64/Debug/" 
- "${CMAKE_SOURCE_DIR}/lib/x64/" 
+	${LIB_SEARCH_PATH}
  NO_DEFAULT_PATH)
  
  find_library (FRTYP 
    freetype
  PATHS 
- "${CMAKE_SOURCE_DIR}/lib/x64/Release/"
- "${CMAKE_SOURCE_DIR}/lib/x64/Debug/" 
- "${CMAKE_SOURCE_DIR}/lib/x64/" 
+	${LIB_SEARCH_PATH}
  NO_DEFAULT_PATH)
  
  find_library (FRYTPGL 
    freetype-gl
  PATHS 
- "${CMAKE_SOURCE_DIR}/lib/x64/Release/"
- "${CMAKE_SOURCE_DIR}/lib/x64/Debug/" 
- "${CMAKE_SOURCE_DIR}/lib/x64/" 
+	${LIB_SEARCH_PATH}
  NO_DEFAULT_PATH)
  
   find_library (FMOD 
    fmod
  PATHS 
- "${CMAKE_SOURCE_DIR}/lib/x64/Release/"
- "${CMAKE_SOURCE_DIR}/lib/x64/Debug/" 
- "${CMAKE_SOURCE_DIR}/lib/x64/" 
+	${LIB_SEARCH_PATH}
  NO_DEFAULT_PATH)
  
+ target_compile_definitions(celestial_drift_main PRIVATE GLEW_STATIC)
  
 TARGET_LINK_LIBRARIES(celestial_drift_main ${GLFW} ${GLEW} ${FRTYP} ${FRYTPGL} ${FMOD} "opengl32") 
 

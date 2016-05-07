@@ -1,4 +1,3 @@
-#define GLEW_STATIC
 #include "GL/glew.h"
 #include "common.h"
 #include "pc_video.h"
