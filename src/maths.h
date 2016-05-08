@@ -23,6 +23,8 @@ inline int randomColor() {
 }
 
 vec3 GetForwardVector(const quat &q);
+vec3 GetUpVector(const quat &q);
+vec3 GetRightVector(const quat& q);
 
 const std::string tos(const vec3 &v);
 

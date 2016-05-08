@@ -1,6 +1,10 @@
 #include "component.h"
 
-Component::Component(const std::string &token) {token_ = token;}
+Component::Component(const std::string &token) {
+  token_ = token;
+  Ent_ = nullptr;
+  active_ = false;
+}
 
 Component::~Component() {}
 

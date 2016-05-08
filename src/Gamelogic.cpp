@@ -40,6 +40,7 @@ RaceState GameLogic::racestate;
 
 #define SHIPCOUNT 16
 Entity ships[SHIPCOUNT];
+Entity blankEnt;
 
 Entity player;
 Entity npc;
@@ -56,7 +57,7 @@ bool GameLogic::Init() {
 
 bool Menu_up(const std::vector<std::string> &params) {
   LOG(logDEBUG2) << "Menu Up";
-  Menu::activeMenu->Move(MENU_DOWN);
+  Menu::activeMenu->Move(MENU_UP);
   return true;
 }
 bool Menu_down(const std::vector<std::string> &params) {
@@ -107,8 +108,8 @@ bool Controls(const std::vector<std::string> &params) {
 bool GameLogic::Run() {
   const vec3 start = glm::vec3(-7, 8, -30);
   for (size_t i = 0; i < SHIPCOUNT; i++) {
-    int row = i % 2;
-    int collumn = i / 3;
+    int row = (i+1) % 2;
+    int collumn = (i+1) / 2;
     float spacing = 4.0f;
 
     if (i == 0) {
@@ -123,7 +124,13 @@ bool GameLogic::Run() {
 
   Components::FollowCamera cam = Components::FollowCamera();
   ships[0].AddComponent(cam);
-  Scene::SetActiveCamera(&cam);
+  //Scene::SetActiveCamera(&cam);
+
+  Components::FlyCamera fcam = Components::FlyCamera();
+  blankEnt = Entity();
+  blankEnt.AddComponent(fcam);
+  Scene::SetActiveCamera(&fcam);
+
 
   trackEnt = Entity();
   Components::CmTrack trackmr = Components::CmTrack();
@@ -174,6 +181,25 @@ bool GameLogic::Run() {
   CommandParser::Cmd_Bind({"", "menu_down", "DOWN", ""});
   CommandParser::Cmd_Bind({"", "menu_enter", "ENTER", ""});
   CommandParser::Cmd_Bind({"", "quit", "ESC", ""});
+
+  Mesh texm = Mesh();
+  texm.hasUvs = true;
+  texm.hasNormals = false;
+  texm.loadedLocal = false;
+  texm.loadedMain = true;
+  texm.hasColours = false;
+  texm.hasIndicies = true;
+  texm.numVerts = 4;
+  texm.vertexData = {
+      {-1.0f, 1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}
+  };
+  texm.uvs = { {-1.0f, 1.0f },{ -1.0f, -1.0f },{ 1.0f, -1.0f },{ 1.0f, 1.0f }};
+  texm.indices = { 0, 2, 1, 0, 3, 2 };
+  texm.shaderPref = "grid";
+  Renderer::LoadMesh(&texm);
+
+
+
 
   auto t = gameclock::now();
   double frametimes[256];
@@ -237,7 +263,22 @@ bool GameLogic::Run() {
       float depth;
 
       for (size_t i = 0; i < SHIPCOUNT; i++) {
+        //ship track collision
         if (Collide(ships[i].GetPosition(), 1.0f, p, point, resultNormal, depth)) {
+          std::vector<Component *> cc = ships[i].GetComponents("ShipDriver");
+          Resolve(ships[i], *(Components::CmShipdriver *)(cc[0]), resultNormal, depth);
+        }
+      }
+    }
+    for (size_t i = 0; i < SHIPCOUNT; i++) {
+      for (size_t j = 0; j < SHIPCOUNT; j++) {
+        if (j == i) { continue; }
+        //ship ship collision
+        vec3 point;
+        vec3 resultNormal;
+        float depth;
+        if (Collide(ships[i].GetPosition(), 1.0f, ships[j].GetPosition(), 1.0f, point, resultNormal, depth)) {
+       //   cout << i << " " << j << tos(point) << tos(resultNormal) << depth << endl;
           std::vector<Component *> cc = ships[i].GetComponents("ShipDriver");
           Resolve(ships[i], *(Components::CmShipdriver *)(cc[0]), resultNormal, depth);
         }
@@ -270,7 +311,9 @@ bool GameLogic::Run() {
     Renderer::PreRender();
 
     Scene::Render(delta);
-    GroundPlane::Render(player.GetPosition().x, player.GetPosition().z);
+    //GroundPlane::Render(player.GetPosition().x, player.GetPosition().z);
+
+    Renderer::RenderMesh(texm, mat4());
 
     // rendering choice
     if (inMenu) {
