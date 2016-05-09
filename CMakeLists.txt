@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.5.2)
 
 project(celestial_drift)
 
@@ -59,8 +59,8 @@ add_custom_command(TARGET celestial_drift_main POST_BUILD
         $<TARGET_FILE_DIR:celestial_drift_main>)
 add_custom_command(TARGET celestial_drift_main POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "resources"
-        $<TARGET_FILE_DIR:celestial_drift_main>"/resources")	
+        resources
+        $<TARGET_FILE_DIR:celestial_drift_main>/resources)	
 if(MSVC)
 #MultiThreaded build for that speedy compilation
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
