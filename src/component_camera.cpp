@@ -29,16 +29,18 @@ Components::FollowCamera::~FollowCamera() {}
 bool Components::FollowCamera::IsActive() { return false; }
 
 glm::mat4 Components::FollowCamera::getViewMatrix() {
+  vec3 f = normalize(GetForwardVector(Ent_->GetRotation()));
   return glm::lookAt(lastpos_,
-                     Ent_->GetPosition(), // and looks at the origin
+                     Ent_->GetPosition()+(f*10.0f), // and looks at the origin
                      glm::vec3(0, 1, 0)   // Head is up (set to 0,-1,0 to look upside-down)
                      );
 }
 
 void Components::FollowCamera::Update(double delta) {
   vec3 f = normalize(GetForwardVector(Ent_->GetRotation()));
-  vec3 pos = Ent_->GetPosition() + (-10.0f * f) + vec3(0, 4.0f, 0);
+  vec3 pos = Ent_->GetPosition() + (-8.0f * f) + vec3(0, 3.0f, 0);
   lastpos_ = glm::mix(lastpos_, pos, 4.0 * delta);
+
 }
 
 //--------

@@ -229,7 +229,7 @@ void PC_Renderer::RenderSkybox() {
   glGetIntegerv(GL_DEPTH_FUNC, &OldDepthFuncMode);
 
   glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBlendFunc(GL_ONE, GL_ONE_MINUS_DST_COLOR);
 
   glDisable(GL_CULL_FACE);
   glDepthFunc(GL_LEQUAL);
