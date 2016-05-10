@@ -104,25 +104,25 @@ bool Components::FlyCamera::IsActive() { return false; }
 
 void Components::FlyCamera::Move(Direction d) {
 
-  const float speed = 1.0f;
+  const float speed = 0.2f;
   const float hRotSpeed = 0.05f * speed;
   const float vRotSpeed = 0.035f * speed;
   vec3 rot = vec3(0);
+  const vec3 right = normalize(GetRightVector(Ent_->GetRotation()));
+  const vec3 forward = normalize(GetForwardVector(Ent_->GetRotation()));
 
   {
     const vec3 UP = vec3(0, 1.0f, 0);
-    const vec3 RIGHT = vec3(0, 0, 1.0f);
-    const vec3 FORWARD = vec3(1.0f, 0, 0);
     // pitch
     if (d == PD) {
-      Ent_->SetRotation(angleAxis(vRotSpeed, rotate(inverse(Ent_->GetRotation()), FORWARD)) *
-                        Ent_->GetRotation());
+      //Ent_->SetRotation(angleAxis(vRotSpeed, rotate(inverse(Ent_->GetRotation()), FORWARD)) * Ent_->GetRotation());
+      Ent_->SetRotation(angleAxis(vRotSpeed, right) * Ent_->GetRotation());
     }
     if (d == PU) {
       // Ent->setRotation(AngleAxisToQuat(FORWARD*Inverse(Ent->getRotation()),
       // -vRotSpeed) * Ent->getRotation());
-      Ent_->SetRotation(angleAxis(-vRotSpeed, rotate(inverse(Ent_->GetRotation()), FORWARD)) *
-                        Ent_->GetRotation());
+      //Ent_->SetRotation(angleAxis(-vRotSpeed, rotate(inverse(Ent_->GetRotation()), FORWARD)) * Ent_->GetRotation());
+      Ent_->SetRotation(angleAxis(-vRotSpeed, right) * Ent_->GetRotation());
     }
 
     // yaw
@@ -135,9 +135,6 @@ void Components::FlyCamera::Move(Direction d) {
   }
   Ent_->SetRotation(normalize(Ent_->GetRotation()));
 
-  vec3 right = normalize(GetRightVector(Ent_->GetRotation()));
-  vec3 direction = normalize(GetForwardVector(Ent_->GetRotation()));
-
   // First person fly camera movement
   rot = vec3(0);
   if (d == SR) {
@@ -147,10 +144,10 @@ void Components::FlyCamera::Move(Direction d) {
     rot += (speed)*right;
   }
   if (d == BACK) {
-    rot -= (speed)*direction;
+    rot -= (speed)*forward;
   }
   if (d == FORWARD) {
-    rot += (speed)*direction;
+    rot += (speed)*forward;
   }
 
   Ent_->SetPosition(Ent_->GetPosition() + rot);

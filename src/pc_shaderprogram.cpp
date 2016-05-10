@@ -40,13 +40,14 @@ ShaderProgram *ShaderProgram::Load(const std::string &name) {
     glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &maxLength);
 
     // The maxLength includes the NULL character
-    std::vector<GLchar> infoLog(maxLength);
+    std::string infoLog(maxLength,0);
     glGetShaderInfoLog(vertexShader, maxLength, &maxLength, &infoLog[0]);
 
     // We don't need the shader anymore.
     glDeleteShader(vertexShader);
 
     // Use the infoLog as you see fit.
+    LOG(logERROR) << infoLog << std::endl;
 
     // In this simple program, we'll just leave
     return nullptr;
@@ -69,7 +70,7 @@ ShaderProgram *ShaderProgram::Load(const std::string &name) {
     glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &maxLength);
 
     // The maxLength includes the NULL character
-    std::vector<GLchar> infoLog(maxLength);
+    std::string infoLog(maxLength, 0);
     glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, &infoLog[0]);
 
     // We don't need the shader anymore.
@@ -78,6 +79,7 @@ ShaderProgram *ShaderProgram::Load(const std::string &name) {
     glDeleteShader(vertexShader);
 
     // Use the infoLog as you see fit.
+    LOG(logERROR) << infoLog << std::endl;
 
     // In this simple program, we'll just leave
     LOG(logERROR) << std::string(infoLog.begin(), infoLog.end());

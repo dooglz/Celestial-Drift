@@ -1,4 +1,7 @@
 #pragma once
+#include <string>
+#include <vector>
+#include "glm/glm.hpp"
 
 struct Mesh;
 namespace Components {
@@ -13,6 +16,9 @@ public:
   static void ClearColour(glm::vec4 c);
   static void SetViewMatrix(const glm::mat4 &vm);
   static void RenderMesh(const Mesh &m, const glm::mat4 &modelMatrix);
+  static void BindTexture(const unsigned int texID, const unsigned int texUnit, const std::string& shader);
+  static void CreateSkybox(const std::string(&imgs)[6]);
+  static void PC_Renderer::RenderSkybox();
   static void LoadMesh(Mesh *msh);
   static void PreRender() { ClearFrame(); };
   static void PostRender();

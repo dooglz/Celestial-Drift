@@ -83,40 +83,23 @@ target_include_directories(celestial_drift_main PUBLIC "include")
 link_directories("${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/${config}")
 set(LIB_SEARCH_PATH "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/Release/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/Debug/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/" )
 
-find_library (GLFW 
-  glfw3
- PATHS 
+set(LIBS2 "glfw3" "glew32" "freetype" "freetype-gl" "fmod" "FreeImage")
+
+foreach(loop_var ${LIBS2})
+message (${loop_var})
+ set(FOUND_LIB "FOUND_LIB-NOTFOUND")
+ find_library (FOUND_LIB 
+   ${loop_var}
+  PATHS 
 	${LIB_SEARCH_PATH}
- NO_DEFAULT_PATH)
- message(${GLFW})
+  NO_DEFAULT_PATH)
+ message(${FOUND_LIB})
+ TARGET_LINK_LIBRARIES(celestial_drift_main ${FOUND_LIB})
+endforeach(loop_var)
  
- find_library (GLEW 
-   glew32
- PATHS 
-	${LIB_SEARCH_PATH}
- NO_DEFAULT_PATH)
+target_compile_definitions(celestial_drift_main PRIVATE GLEW_STATIC)
  
- find_library (FRTYP 
-   freetype
- PATHS 
-	${LIB_SEARCH_PATH}
- NO_DEFAULT_PATH)
- 
- find_library (FRYTPGL 
-   freetype-gl
- PATHS 
-	${LIB_SEARCH_PATH}
- NO_DEFAULT_PATH)
- 
-  find_library (FMOD 
-   fmod
- PATHS 
-	${LIB_SEARCH_PATH}
- NO_DEFAULT_PATH)
- 
- target_compile_definitions(celestial_drift_main PRIVATE GLEW_STATIC)
- 
-TARGET_LINK_LIBRARIES(celestial_drift_main ${GLFW} ${GLEW} ${FRTYP} ${FRYTPGL} ${FMOD} "opengl32") 
+TARGET_LINK_LIBRARIES(celestial_drift_main "opengl32") 
 
 
 

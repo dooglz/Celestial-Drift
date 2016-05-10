@@ -1,5 +1,6 @@
 #include "CommandParser.h"
 #include "Physics.h"
+#include "TextureManager.h"
 #include "common.h"
 #include "component_camera.h"
 #include "component_mesh_renderer.h"
@@ -8,6 +9,7 @@
 #include "component_shipdriver.h"
 #include "component_track.h"
 #include "entity.h"
+#include "filesystem.h"
 #include "gamelogic.h"
 #include "genericInput.h"
 #include "glm/glm.hpp"
@@ -25,6 +27,7 @@
 #include <iostream>
 // SUPER TEMP
 #include "font.h"
+
 bool RUNGAME;
 bool helpselect;
 bool controlselect;
@@ -54,7 +57,6 @@ bool GameLogic::Init() {
   inMenu = true;
   return false;
 }
-
 
 bool ToggleFly(const std::vector<std::string> &params) {
   debugcmra = !debugcmra;
@@ -114,8 +116,8 @@ bool GameLogic::Run() {
   debugcmra = false;
   const vec3 start = glm::vec3(-7, 8, -30);
   for (size_t i = 0; i < SHIPCOUNT; i++) {
-    int row = (i+1) % 2;
-    int collumn = (i+1) / 2;
+    int row = (i + 1) % 2;
+    int collumn = (i + 1) / 2;
     float spacing = 4.0f;
 
     if (i == 0) {
@@ -130,13 +132,12 @@ bool GameLogic::Run() {
 
   Components::FollowCamera cam = Components::FollowCamera();
   ships[0].AddComponent(cam);
-  //Scene::SetActiveCamera(&cam);
+  // Scene::SetActiveCamera(&cam);
 
   Components::FlyCamera fcam = Components::FlyCamera();
   blankEnt = Entity();
   blankEnt.AddComponent(fcam);
   Scene::SetActiveCamera(&fcam);
-
 
   trackEnt = Entity();
   Components::CmTrack trackmr = Components::CmTrack();
@@ -173,7 +174,7 @@ bool GameLogic::Run() {
   helpmnu->GetItems()->push_back(helpmnuitm5);
 
   // input
-  CommandParser::commands.push_back({"toggle_fly", "", 0, ToggleFly });
+  CommandParser::commands.push_back({"toggle_fly", "", 0, ToggleFly});
   CommandParser::commands.push_back({"menu_up", "", 0, Menu_up});
   CommandParser::commands.push_back({"menu_down", "", 0, Menu_down});
   CommandParser::commands.push_back({"menu_enter", "", 0, Menu_enter});
@@ -188,8 +189,7 @@ bool GameLogic::Run() {
   CommandParser::Cmd_Bind({"", "menu_down", "DOWN", ""});
   CommandParser::Cmd_Bind({"", "menu_enter", "ENTER", ""});
   CommandParser::Cmd_Bind({"", "quit", "ESC", ""});
-  CommandParser::Cmd_Bind({ "", "toggle_fly", "V", "" });
-
+  CommandParser::Cmd_Bind({"", "toggle_fly", "V", ""});
 
   Mesh texm = Mesh();
   texm.hasUvs = true;
@@ -200,15 +200,16 @@ bool GameLogic::Run() {
   texm.hasIndicies = true;
   texm.numVerts = 4;
   texm.vertexData = {
-      {-1.0f, 1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}
-  };
-  texm.uvs = { {-1.0f, 1.0f },{ -1.0f, -1.0f },{ 1.0f, -1.0f },{ 1.0f, 1.0f }};
-  texm.indices = { 0, 2, 1, 0, 3, 2 };
-  texm.shaderPref = "grid";
+      {-1.0f, 1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}};
+  texm.uvs = {{0.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}};
+  texm.indices = {0, 2, 1, 0, 3, 2};
+  texm.shaderPref = "texture";
   Renderer::LoadMesh(&texm);
+  std::string aa = fileIO::SearchDirsPath("img/bk.jpg");
+  TextureManager::Inst()->LoadTexture(aa.c_str(), 0);
 
-
-
+  Renderer::CreateSkybox({"resources/img/bk.jpg", "resources/img/ft.jpg", "resources/img/up.jpg",
+                          "resources/img/dn.jpg", "resources/img/lf.jpg", "resources/img/rt.jpg"});
 
   auto t = gameclock::now();
   double frametimes[256];
@@ -246,8 +247,7 @@ bool GameLogic::Run() {
     Input::Update();
     if (debugcmra) {
       Scene::SetActiveCamera(&fcam);
-    }
-    else {
+    } else {
       Scene::SetActiveCamera(&cam);
     }
 
@@ -278,7 +278,7 @@ bool GameLogic::Run() {
       float depth;
 
       for (size_t i = 0; i < SHIPCOUNT; i++) {
-        //ship track collision
+        // ship track collision
         if (Collide(ships[i].GetPosition(), 1.0f, p, point, resultNormal, depth)) {
           std::vector<Component *> cc = ships[i].GetComponents("ShipDriver");
           Resolve(ships[i], *(Components::CmShipdriver *)(cc[0]), resultNormal, depth);
@@ -287,13 +287,16 @@ bool GameLogic::Run() {
     }
     for (size_t i = 0; i < SHIPCOUNT; i++) {
       for (size_t j = 0; j < SHIPCOUNT; j++) {
-        if (j == i) { continue; }
-        //ship ship collision
+        if (j == i) {
+          continue;
+        }
+        // ship ship collision
         vec3 point;
         vec3 resultNormal;
         float depth;
-        if (Collide(ships[i].GetPosition(), 1.0f, ships[j].GetPosition(), 1.0f, point, resultNormal, depth)) {
-       //   cout << i << " " << j << tos(point) << tos(resultNormal) << depth << endl;
+        if (Collide(ships[i].GetPosition(), 1.0f, ships[j].GetPosition(), 1.0f, point, resultNormal,
+                    depth)) {
+          //   cout << i << " " << j << tos(point) << tos(resultNormal) << depth << endl;
           std::vector<Component *> cc = ships[i].GetComponents("ShipDriver");
           Resolve(ships[i], *(Components::CmShipdriver *)(cc[0]), resultNormal, depth);
         }
@@ -326,8 +329,11 @@ bool GameLogic::Run() {
     Renderer::PreRender();
 
     Scene::Render(delta);
-    //GroundPlane::Render(player.GetPosition().x, player.GetPosition().z);
+    // GroundPlane::Render(player.GetPosition().x, player.GetPosition().z);
 
+    // glActiveTexture(GL_TEXTURE0);
+    // TextureManager::Inst()->BindTexture(0);
+    Renderer::BindTexture(0, 0, "texture");
     Renderer::RenderMesh(texm, mat4());
 
     // rendering choice
@@ -362,6 +368,8 @@ bool GameLogic::Run() {
     } else {
       controls = "";
     }
+
+    PC_Renderer::RenderSkybox();
     Font::Render();
     Renderer::PostRender();
     Video::Swap();

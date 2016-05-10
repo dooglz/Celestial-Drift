@@ -1,15 +1,14 @@
+#include "pc_renderer.h"
 #include "common.h"
 #include "component_camera.h"
 #include "glm/glm.hpp"
 #include "mesh.h"
-#include "pc_renderer.h"
 #include "pc_shaderprogram.h"
 #include "renderer.h"
 #include "resource.h"
-
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
-
+#include "TextureManager.h"
 glm::mat4 PC_Renderer::vp_;
 std::vector<std::pair<const glm::vec3, const glm::vec4>> PC_Renderer::linebuffer;
 
@@ -28,6 +27,7 @@ bool PC_Renderer::Init() {
   glViewport(0, 0, DEFAULT_RESOLUTION);
   glDepthFunc(GL_LESS);
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_TEXTURE_2D);
   return false;
 }
 
@@ -45,11 +45,17 @@ void PC_Renderer::DrawLine(const glm::vec3 &p1, const glm::vec3 &p2, const glm::
   linebuffer.push_back(std::make_pair(p2, col2));
 }
 
+static glm::mat4 vps_;
 void PC_Renderer::SetViewMatrix(const glm::mat4 &vpm) {
   glm::mat4 Projection =
       glm::perspective(glm::radians(45.0f),
                        (float)DEFAULT_RESOLUTION_X / (float)DEFAULT_RESOLUTION_Y, 0.1f, 1000.0f);
   vp_ = Projection * vpm;
+  
+  vps_ = vpm;
+  vps_[3] = glm::vec4(0, 0, 0, 1);
+  vps_ = Projection *vps_;
+
 }
 
 void PC_Renderer::RenderMesh(const Mesh &m, const mat4 &modelMatrix) {
@@ -61,7 +67,7 @@ void PC_Renderer::RenderMesh(const Mesh &m, const mat4 &modelMatrix) {
   if (m.shaderPref != "") {
     shadername = m.shaderPref;
     if (Storage<ShaderProgram>::Get(shadername) == nullptr) {
-      LOG(logWARNING) << "Can't find shader " << shadername << "for model";
+      LOG(logWARNING) << "Can't find shader " << shadername << " for model";
       shadername = "basic";
     }
   }
@@ -130,6 +136,119 @@ void PC_Renderer::RenderMesh(const Mesh &m, const mat4 &modelMatrix) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL);
   glBindVertexArray(0);
   glUseProgram(NULL);
+}
+
+void PC_Renderer::BindTexture(const unsigned int texID, const unsigned int texUnit,
+                              const std::string &shadername) {
+  const auto prog = Storage<ShaderProgram>::Get(shadername)->program;
+  glUseProgram(prog);
+  CheckGL();
+
+  glActiveTexture(GL_TEXTURE0 + texUnit);
+  TextureManager::Inst()->BindTexture(texID);
+
+  GLint texuniform = glGetUniformLocation(prog, ("texture" + std::to_string(texUnit)).c_str());
+  glUniform1i(texuniform, 0 + texUnit);
+  CheckGL();
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // CLAMP_TO_EDGE );
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // CLAMP_TO_EDGE );
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
+
+static GLuint tex_cube;
+GLuint sbox_vao;
+GLuint sbox_vbo;
+void PC_Renderer::CreateSkybox(const std::string (&imgs)[6]) {
+
+  // generate a cube-map texture to hold all the sides
+  glActiveTexture(GL_TEXTURE0);
+  glGenTextures(1, &tex_cube);
+
+  glBindTexture(GL_TEXTURE_CUBE_MAP, tex_cube);
+
+  const int sides[] = {GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+                       GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+                       GL_TEXTURE_CUBE_MAP_NEGATIVE_X, GL_TEXTURE_CUBE_MAP_POSITIVE_X};
+
+  for (size_t i = 0; i < 6; i++) {
+    TextureManager::Inst()->LoadTexture(imgs[i].c_str(),0,false, sides[i]);
+  }
+
+  // format cube map texture
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+  float points[] = {-10.0f, 10.0f,  -10.0f, -10.0f, -10.0f, -10.0f, 10.0f,  -10.0f, -10.0f,
+                    10.0f,  -10.0f, -10.0f, 10.0f,  10.0f,  -10.0f, -10.0f, 10.0f,  -10.0f,
+                    -10.0f, -10.0f, 10.0f,  -10.0f, -10.0f, -10.0f, -10.0f, 10.0f,  -10.0f,
+                    -10.0f, 10.0f,  -10.0f, -10.0f, 10.0f,  10.0f,  -10.0f, -10.0f, 10.0f,
+                    10.0f,  -10.0f, -10.0f, 10.0f,  -10.0f, 10.0f,  10.0f,  10.0f,  10.0f,
+                    10.0f,  10.0f,  10.0f,  10.0f,  10.0f,  -10.0f, 10.0f,  -10.0f, -10.0f,
+                    -10.0f, -10.0f, 10.0f,  -10.0f, 10.0f,  10.0f,  10.0f,  10.0f,  10.0f,
+                    10.0f,  10.0f,  10.0f,  10.0f,  -10.0f, 10.0f,  -10.0f, -10.0f, 10.0f,
+                    -10.0f, 10.0f,  -10.0f, 10.0f,  10.0f,  -10.0f, 10.0f,  10.0f,  10.0f,
+                    10.0f,  10.0f,  10.0f,  -10.0f, 10.0f,  10.0f,  -10.0f, 10.0f,  -10.0f,
+                    -10.0f, -10.0f, -10.0f, -10.0f, -10.0f, 10.0f,  10.0f,  -10.0f, -10.0f,
+                    10.0f,  -10.0f, -10.0f, -10.0f, -10.0f, 10.0f,  10.0f,  -10.0f, 10.0f};
+
+  glGenBuffers(1, &sbox_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, sbox_vbo);
+  glBufferData(GL_ARRAY_BUFFER, 3 * 36 * sizeof(float), &points, GL_STATIC_DRAW);
+
+  glGenVertexArrays(1, &sbox_vao);
+  glBindVertexArray(sbox_vao);
+  glEnableVertexAttribArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, sbox_vbo);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+  glBindBuffer(GL_ARRAY_BUFFER, NULL);
+  glBindVertexArray(NULL);
+ // glBindBuffer(GL_ARRAY_BUFFER, 0);
+  //glBindVertexArray(0);
+}
+
+void PC_Renderer::RenderSkybox() {
+  const auto prog = Storage<ShaderProgram>::Get("skybox");
+
+  if (prog == nullptr) {
+    LOG(logWARNING) << "Can't find shader skybox for model";
+    return;
+  }
+  glUseProgram(prog->program);
+  CheckGL();
+
+  glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(vps_));
+
+
+  GLint OldDepthFuncMode;
+  glGetIntegerv(GL_DEPTH_FUNC, &OldDepthFuncMode);
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  glDisable(GL_CULL_FACE);
+  glDepthFunc(GL_LEQUAL);
+
+
+  //glDepthMask(GL_FALSE);
+  //glDepthFunc(GL_LESS);
+
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, tex_cube);
+  glBindBuffer(GL_ARRAY_BUFFER, sbox_vbo);
+  glBindVertexArray(sbox_vao);
+  glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+  glEnable(GL_CULL_FACE);
+  glDepthFunc(OldDepthFuncMode);
+  CheckGL();
+  glUseProgram(0);
 }
 
 void PC_Renderer::LoadMesh(Mesh *msh) {
@@ -228,9 +347,7 @@ void PC_Renderer::ClearColour(glm::vec4 c) {
   glClearDepth(1.0);
 }
 
-void PC_Renderer::ClearFrame() {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
+void PC_Renderer::ClearFrame() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
 void PC_Renderer::ProcessLines() {
   if (linebuffer.size() < 1) {
