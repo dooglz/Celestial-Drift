@@ -29,7 +29,7 @@ bool RUNGAME;
 bool helpselect;
 bool controlselect;
 bool inMenu;
-
+bool debugcmra;
 string controls = "";
 
 const string versionText = "WIP BUILD:" + version::Hash + " - " +
@@ -55,6 +55,11 @@ bool GameLogic::Init() {
   return false;
 }
 
+
+bool ToggleFly(const std::vector<std::string> &params) {
+  debugcmra = !debugcmra;
+  return true;
+}
 bool Menu_up(const std::vector<std::string> &params) {
   LOG(logDEBUG2) << "Menu Up";
   Menu::activeMenu->Move(MENU_UP);
@@ -106,6 +111,7 @@ bool Controls(const std::vector<std::string> &params) {
 }
 
 bool GameLogic::Run() {
+  debugcmra = false;
   const vec3 start = glm::vec3(-7, 8, -30);
   for (size_t i = 0; i < SHIPCOUNT; i++) {
     int row = (i+1) % 2;
@@ -167,6 +173,7 @@ bool GameLogic::Run() {
   helpmnu->GetItems()->push_back(helpmnuitm5);
 
   // input
+  CommandParser::commands.push_back({"toggle_fly", "", 0, ToggleFly });
   CommandParser::commands.push_back({"menu_up", "", 0, Menu_up});
   CommandParser::commands.push_back({"menu_down", "", 0, Menu_down});
   CommandParser::commands.push_back({"menu_enter", "", 0, Menu_enter});
@@ -181,6 +188,8 @@ bool GameLogic::Run() {
   CommandParser::Cmd_Bind({"", "menu_down", "DOWN", ""});
   CommandParser::Cmd_Bind({"", "menu_enter", "ENTER", ""});
   CommandParser::Cmd_Bind({"", "quit", "ESC", ""});
+  CommandParser::Cmd_Bind({ "", "toggle_fly", "V", "" });
+
 
   Mesh texm = Mesh();
   texm.hasUvs = true;
@@ -235,6 +244,12 @@ bool GameLogic::Run() {
                                     ((sin((0.1f * runtime) + 4) * 127.0f) + 50.0f) / 255.0f, 1.0f));
 
     Input::Update();
+    if (debugcmra) {
+      Scene::SetActiveCamera(&fcam);
+    }
+    else {
+      Scene::SetActiveCamera(&cam);
+    }
 
     // menu choice
     if (inMenu) {

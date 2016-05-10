@@ -1,5 +1,6 @@
 #include "component_camera.h"
 #include "entity.h"
+#include "CommandParser.h"
 #include "glm\glm.hpp"
 #include <glm/gtx/transform.hpp>
 #include "glm/gtx/euler_angles.hpp"
@@ -41,7 +42,61 @@ void Components::FollowCamera::Update(double delta) {
 }
 
 //--------
-Components::FlyCamera::FlyCamera(){}
+static Components::FlyCamera *pp;
+//todo lamba this mess
+static bool f_(const std::vector<std::string> &params) {
+  pp->Move(Components::FlyCamera::FORWARD);
+  return true;
+}
+static bool b_(const std::vector<std::string> &params) {
+  pp->Move(Components::FlyCamera::BACK);
+  return true;
+}
+static bool sl_(const std::vector<std::string> &params) {
+  pp->Move(Components::FlyCamera::SL);
+  return true;
+}
+static bool sr_(const std::vector<std::string> &params) {
+  pp->Move(Components::FlyCamera::SR);
+  return true;
+}
+static bool pu_(const std::vector<std::string> &params) {
+  pp->Move(Components::FlyCamera::PU);
+  return true;
+}
+static bool pd_(const std::vector<std::string> &params) {
+  pp->Move(Components::FlyCamera::PD);
+  return true;
+}
+static bool pl_(const std::vector<std::string> &params) {
+  pp->Move(Components::FlyCamera::PL);
+  return true;
+}
+static bool pr_(const std::vector<std::string> &params) {
+  pp->Move(Components::FlyCamera::PR);
+  return true;
+}
+
+Components::FlyCamera::FlyCamera(){
+  CommandParser::commands.push_back({ "f_", "", 1, f_ });
+  CommandParser::commands.push_back({ "b_", "", 1, b_ });
+  CommandParser::commands.push_back({ "sl_", "", 1, sl_ });
+  CommandParser::commands.push_back({ "sr_", "", 1, sr_ });
+  CommandParser::commands.push_back({ "pu_", "", 1, pu_ });
+  CommandParser::commands.push_back({ "pd_", "", 1, pd_ });
+  CommandParser::commands.push_back({ "pl_", "", 1, pl_ });
+  CommandParser::commands.push_back({ "pr_", "", 1, pr_ });
+
+  CommandParser::Cmd_Bind({ "", "f_", "W", "1" });
+  CommandParser::Cmd_Bind({ "", "b_", "S", "1" });
+  CommandParser::Cmd_Bind({ "", "sl_", "A", "1" });
+  CommandParser::Cmd_Bind({ "", "sr_", "D", "1" });
+  CommandParser::Cmd_Bind({ "", "pu_", "UP", "1" });
+  CommandParser::Cmd_Bind({ "", "pd_", "DOWN", "1" });
+  CommandParser::Cmd_Bind({ "", "pl_", "LEFT", "1" });
+  CommandParser::Cmd_Bind({ "", "pr_", "RIGHT", "1" });
+  pp = this; //haha oh wow such bad, much spagetti
+}
 
 Components::FlyCamera::~FlyCamera() {}
 
