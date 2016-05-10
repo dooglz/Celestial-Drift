@@ -290,3 +290,4 @@ _Pvt_Extensions
 *.share
 *.VC.db
 !resources/**/*.obj
+!redist/**
