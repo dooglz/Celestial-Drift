@@ -35,8 +35,8 @@ bool inMenu;
 bool debugcmra;
 string controls = "";
 
-const string versionText = "WIP BUILD:" + version::Hash + " - " +
-                           string(version::CommitDate, 0, version::CommitDate.length() - 6);
+const string versionText = "WIP BUILD:" + string(GIT_HASH) + " - " +
+                           string(string(GIT_DATE), 0, string(GIT_DATE).length() - 6);
 
 Gamestate GameLogic::gamestate;
 RaceState GameLogic::racestate;

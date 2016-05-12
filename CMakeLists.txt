@@ -105,8 +105,23 @@ message (${loop_var})
 endforeach(loop_var)
  
 target_compile_definitions(celestial_drift_main PRIVATE GLEW_STATIC)
- 
+
 TARGET_LINK_LIBRARIES(celestial_drift_main "opengl32") 
 
+exec_program(
+    "git"
+    ${CMAKE_SOURCE_DIR}
+    ARGS " log -n 1 --format=format:\"%h\""
+    OUTPUT_VARIABLE GITHASH 
+)
 
+exec_program(
+    "git"
+    ${CMAKE_SOURCE_DIR}
+    ARGS " log -n 1 --format=format:\"%ai\""
+    OUTPUT_VARIABLE GITDATE
+)
+
+target_compile_definitions(celestial_drift_main PUBLIC  GIT_HASH="${GITHASH}")
+target_compile_definitions(celestial_drift_main PUBLIC  GIT_DATE="${GITDATE}")
 

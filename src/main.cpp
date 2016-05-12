@@ -14,8 +14,7 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
   cout << "hello world!" << endl;
-  LOG(logDEBUG1) << "Big Red Engine - Commit: " << version::Hash
-                 << " - Date: " << version::CommitDate;
+  LOG(logDEBUG1) << "Big Red Engine - Commit: " << GIT_HASH << " - Date: " << GIT_DATE;
 
   // load configs
 

@@ -7,12 +7,14 @@ public:
   static bool Resize();
   static bool Swap();
   static bool Shutdown();
+  static unsigned int FB_SIZE_X;
+  static unsigned int FB_SIZE_Y;
   //
   static GLFWwindow *GetWindow();
 
 protected:
   static GLFWwindow *window_;
-
+  static void Resize(GLFWwindow* window, int width, int height);
 private:
   PC_Video() = delete;
   ~PC_Video() = delete;

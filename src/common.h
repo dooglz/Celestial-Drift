@@ -4,11 +4,12 @@
 #include "platform.h"
 #include <stdint.h>
 
-namespace version{
-  const std::string FullHash="0";
-  const std::string Hash="0";
-  const std::string CommitDate="0";
-}
+#ifndef GIT_HASH 
+#define GIT_HASH "00"
+#define GIT_DATE "00"
+#endif
+
+#define GAME_NAME (std::string("CelestialDrift ")+GIT_HASH)
 
 #if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
 
