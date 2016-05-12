@@ -1,5 +1,5 @@
-#include "CommandParser.h"
 #include "input.h"
+#include "CommandParser.h"
 #include "genericInput.h"
 
 std::vector<actual_Input> actual_Inputs;

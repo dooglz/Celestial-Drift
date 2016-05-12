@@ -2,8 +2,8 @@
 
 #include "common.h"
 #include "component.h"
-#include "resource.h"
 #include "mesh.h"
+#include "resource.h"
 
 struct Mesh;
 // struct Texture;

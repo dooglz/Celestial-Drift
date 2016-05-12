@@ -1,7 +1,7 @@
 #include "filesystem.h"
 #include "assert.h"
-#include <fstream>
 #include <algorithm>
+#include <fstream>
 #include <vector>
 using namespace std;
 
@@ -67,13 +67,12 @@ BinaryFile *BinaryFile::Load(const std::string &name) {
 
   ifstream inFile = Searchdirs(name);
   // copies all data into buffer
-  std::vector<char> buffer((std::istreambuf_iterator<char>(inFile)),
-                           (std::istreambuf_iterator<char>()));
+  std::vector<char> buffer((std::istreambuf_iterator<char>(inFile)), (std::istreambuf_iterator<char>()));
   inFile.close();
   bf->data = new char[buffer.size()];
 
 #if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
-  std::copy(buffer.begin(), buffer.end(),bf->data);
+  std::copy(buffer.begin(), buffer.end(), bf->data);
 #elif defined(_PLATFORM_PS4)
   std::copy(buffer.begin(), buffer.end(), bf->data);
 #endif

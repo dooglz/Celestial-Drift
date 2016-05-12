@@ -12,12 +12,11 @@ public:
   // all these are thread safe
   ConVar(const char *pName, const char *pDefaultValue, int flags = 0);
   ConVar(const char *pName, const char *pDefaultValue, int flags, const char *pHelpString);
-  ConVar(const char *pName, const char *pDefaultValue, int flags, const char *pHelpString,
-         bool bMin, float fMin, bool bMax, float fMax);
-  ConVar(const char *pName, const char *pDefaultValue, int flags, const char *pHelpString,
-         FnChangeCallback_t callback);
-  ConVar(const char *pName, const char *pDefaultValue, int flags, const char *pHelpString,
-         bool bMin, float fMin, bool bMax, float fMax, FnChangeCallback_t callback);
+  ConVar(const char *pName, const char *pDefaultValue, int flags, const char *pHelpString, bool bMin, float fMin,
+         bool bMax, float fMax);
+  ConVar(const char *pName, const char *pDefaultValue, int flags, const char *pHelpString, FnChangeCallback_t callback);
+  ConVar(const char *pName, const char *pDefaultValue, int flags, const char *pHelpString, bool bMin, float fMin,
+         bool bMax, float fMax, FnChangeCallback_t callback);
 
   ~ConVar(void);
 
@@ -81,9 +80,9 @@ private:
   bool ClampValue(float &value);
   void ChangeStringValue(const char *tempVal, float flOldValue);
 
-  void Create(const char *pName, const char *pDefaultValue, int flags = 0,
-              const char *pHelpString = 0, bool bMin = false, float fMin = 0.0, bool bMax = false,
-              float fMax = false, FnChangeCallback_t callback = 0);
+  void Create(const char *pName, const char *pDefaultValue, int flags = 0, const char *pHelpString = 0,
+              bool bMin = false, float fMin = 0.0, bool bMax = false, float fMax = false,
+              FnChangeCallback_t callback = 0);
 
   mutable std::mutex execution_mutex;
 

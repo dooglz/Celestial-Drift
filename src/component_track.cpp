@@ -38,9 +38,7 @@ void Components::CmTrack::SetMesh(Mesh *msh) {
   Moved();
 }
 
-void Components::CmTrack::SetMesh(const std::string &meshname) {
-  SetMesh(Storage<Mesh>::Get(meshname));
-}
+void Components::CmTrack::SetMesh(const std::string &meshname) { SetMesh(Storage<Mesh>::Get(meshname)); }
 
 void Components::CmTrack::Render() {
   if (!mesh_->loadedLocal) {
@@ -90,8 +88,7 @@ void Components::CmTrack::Moved() {
 
   waypoints.clear();
   for (size_t i = 0; i < lineMesh->lines.size(); i += 2) {
-    waypoints.push_back(
-        vec3(Ent_->GetTranform() * vec4(lineMesh->vertexData[lineMesh->lines[i]], 1)));
+    waypoints.push_back(vec3(Ent_->GetTranform() * vec4(lineMesh->vertexData[lineMesh->lines[i]], 1)));
   }
 
   transformedPositions.clear();

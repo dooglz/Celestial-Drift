@@ -13,8 +13,9 @@ public:
   static void Update(double delta);
   static void Render(double delta);
   static void SetActiveCamera(Components::CmCamera *c);
-  //static void SetActiveCamera(Components::FollowCamera *fc);
+  // static void SetActiveCamera(Components::FollowCamera *fc);
   static void Debug();
+
 private:
   static Components::CmCamera *activeCamera_;
   static Components::FollowCamera *playerCamera_;

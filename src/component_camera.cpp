@@ -1,12 +1,12 @@
 #include "component_camera.h"
-#include "entity.h"
 #include "CommandParser.h"
+#include "entity.h"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/quaternion.hpp"
+#include "glm/gtx/euler_angles.hpp"
+#include "glm/gtx/quaternion.hpp"
 #include "glm\glm.hpp"
 #include <glm/gtx/transform.hpp>
-#include "glm/gtx/euler_angles.hpp"
-#include "glm/gtc/quaternion.hpp"
-#include "glm/gtx/quaternion.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 
 Components::CmCamera::CmCamera() : Component("Camera") {}
 
@@ -22,7 +22,7 @@ glm::mat4 Components::CmCamera::getViewMatrix() {
 }
 
 // followcamera setup
-Components::FollowCamera::FollowCamera(){ lastpos_ = {0, 0, 0}; }
+Components::FollowCamera::FollowCamera() { lastpos_ = {0, 0, 0}; }
 
 Components::FollowCamera::~FollowCamera() {}
 
@@ -31,8 +31,8 @@ bool Components::FollowCamera::IsActive() { return false; }
 glm::mat4 Components::FollowCamera::getViewMatrix() {
   vec3 f = normalize(GetForwardVector(Ent_->GetRotation()));
   return glm::lookAt(lastpos_,
-                     Ent_->GetPosition()+(f*10.0f), // and looks at the origin
-                     glm::vec3(0, 1, 0)   // Head is up (set to 0,-1,0 to look upside-down)
+                     Ent_->GetPosition() + (f * 10.0f), // and looks at the origin
+                     glm::vec3(0, 1, 0)                 // Head is up (set to 0,-1,0 to look upside-down)
                      );
 }
 
@@ -40,12 +40,11 @@ void Components::FollowCamera::Update(double delta) {
   vec3 f = normalize(GetForwardVector(Ent_->GetRotation()));
   vec3 pos = Ent_->GetPosition() + (-8.0f * f) + vec3(0, 3.0f, 0);
   lastpos_ = glm::mix(lastpos_, pos, 4.0 * delta);
-
 }
 
 //--------
 static Components::FlyCamera *pp;
-//todo lamba this mess
+// todo lamba this mess
 static bool f_(const std::vector<std::string> &params) {
   pp->Move(Components::FlyCamera::FORWARD);
   return true;
@@ -79,25 +78,25 @@ static bool pr_(const std::vector<std::string> &params) {
   return true;
 }
 
-Components::FlyCamera::FlyCamera(){
-  CommandParser::commands.push_back({ "f_", "", 1, f_ });
-  CommandParser::commands.push_back({ "b_", "", 1, b_ });
-  CommandParser::commands.push_back({ "sl_", "", 1, sl_ });
-  CommandParser::commands.push_back({ "sr_", "", 1, sr_ });
-  CommandParser::commands.push_back({ "pu_", "", 1, pu_ });
-  CommandParser::commands.push_back({ "pd_", "", 1, pd_ });
-  CommandParser::commands.push_back({ "pl_", "", 1, pl_ });
-  CommandParser::commands.push_back({ "pr_", "", 1, pr_ });
+Components::FlyCamera::FlyCamera() {
+  CommandParser::commands.push_back({"f_", "", 1, f_});
+  CommandParser::commands.push_back({"b_", "", 1, b_});
+  CommandParser::commands.push_back({"sl_", "", 1, sl_});
+  CommandParser::commands.push_back({"sr_", "", 1, sr_});
+  CommandParser::commands.push_back({"pu_", "", 1, pu_});
+  CommandParser::commands.push_back({"pd_", "", 1, pd_});
+  CommandParser::commands.push_back({"pl_", "", 1, pl_});
+  CommandParser::commands.push_back({"pr_", "", 1, pr_});
 
-  CommandParser::Cmd_Bind({ "", "f_", "W", "1" });
-  CommandParser::Cmd_Bind({ "", "b_", "S", "1" });
-  CommandParser::Cmd_Bind({ "", "sl_", "A", "1" });
-  CommandParser::Cmd_Bind({ "", "sr_", "D", "1" });
-  CommandParser::Cmd_Bind({ "", "pu_", "UP", "1" });
-  CommandParser::Cmd_Bind({ "", "pd_", "DOWN", "1" });
-  CommandParser::Cmd_Bind({ "", "pl_", "LEFT", "1" });
-  CommandParser::Cmd_Bind({ "", "pr_", "RIGHT", "1" });
-  pp = this; //haha oh wow such bad, much spagetti
+  CommandParser::Cmd_Bind({"", "f_", "W", "1"});
+  CommandParser::Cmd_Bind({"", "b_", "S", "1"});
+  CommandParser::Cmd_Bind({"", "sl_", "A", "1"});
+  CommandParser::Cmd_Bind({"", "sr_", "D", "1"});
+  CommandParser::Cmd_Bind({"", "pu_", "UP", "1"});
+  CommandParser::Cmd_Bind({"", "pd_", "DOWN", "1"});
+  CommandParser::Cmd_Bind({"", "pl_", "LEFT", "1"});
+  CommandParser::Cmd_Bind({"", "pr_", "RIGHT", "1"});
+  pp = this; // haha oh wow such bad, much spagetti
 }
 
 Components::FlyCamera::~FlyCamera() {}
@@ -117,13 +116,13 @@ void Components::FlyCamera::Move(Direction d) {
     const vec3 UP = vec3(0, 1.0f, 0);
     // pitch
     if (d == PD) {
-      //Ent_->SetRotation(angleAxis(vRotSpeed, rotate(inverse(Ent_->GetRotation()), FORWARD)) * Ent_->GetRotation());
+      // Ent_->SetRotation(angleAxis(vRotSpeed, rotate(inverse(Ent_->GetRotation()), FORWARD)) * Ent_->GetRotation());
       Ent_->SetRotation(angleAxis(vRotSpeed, right) * Ent_->GetRotation());
     }
     if (d == PU) {
       // Ent->setRotation(AngleAxisToQuat(FORWARD*Inverse(Ent->getRotation()),
       // -vRotSpeed) * Ent->getRotation());
-      //Ent_->SetRotation(angleAxis(-vRotSpeed, rotate(inverse(Ent_->GetRotation()), FORWARD)) * Ent_->GetRotation());
+      // Ent_->SetRotation(angleAxis(-vRotSpeed, rotate(inverse(Ent_->GetRotation()), FORWARD)) * Ent_->GetRotation());
       Ent_->SetRotation(angleAxis(-vRotSpeed, right) * Ent_->GetRotation());
     }
 

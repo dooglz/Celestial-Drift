@@ -1,5 +1,5 @@
-#include "filesystem.h"
 #include "pc_shaderprogram.h"
+#include "filesystem.h"
 #include "resource.h"
 
 ShaderProgram::ShaderProgram() {}
@@ -40,7 +40,7 @@ ShaderProgram *ShaderProgram::Load(const std::string &name) {
     glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &maxLength);
 
     // The maxLength includes the NULL character
-    std::string infoLog(maxLength,0);
+    std::string infoLog(maxLength, 0);
     glGetShaderInfoLog(vertexShader, maxLength, &maxLength, &infoLog[0]);
 
     // We don't need the shader anymore.

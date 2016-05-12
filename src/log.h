@@ -6,16 +6,7 @@
 
 inline std::string NowTime();
 
-enum TLogLevel {
-  logERROR,
-  logWARNING,
-  logINFO,
-  logDEBUG,
-  logDEBUG1,
-  logDEBUG2,
-  logDEBUG3,
-  logDEBUG4
-};
+enum TLogLevel { logERROR, logWARNING, logINFO, logDEBUG, logDEBUG1, logDEBUG2, logDEBUG3, logDEBUG4 };
 enum TLogDest { logCONSOLe, logFILE, logBOTH };
 
 #ifndef FILELOG_MAX_LEVEL
@@ -46,8 +37,8 @@ private:
   Logger &operator=(Logger &&) = delete;
 };
 
-#define LOG(level)                                                                                 \
+#define LOG(level)                                                                                                     \
   \
-if(level > FILELOG_MAX_LEVEL);                                                                     \
-  else if (level > Logger::ReportingLevel());                                                      \
+if(level > FILELOG_MAX_LEVEL);                                                                                         \
+  else if (level > Logger::ReportingLevel());                                                                          \
   else Logger().Get(level)

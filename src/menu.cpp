@@ -76,8 +76,7 @@ MenuItem::MenuItem() {
   selectable = false;
 }
 
-MenuItem::MenuItem(const string &str, const bool &sble,
-                   std::function<bool(const std::vector<std::string> &param)> cb) {
+MenuItem::MenuItem(const string &str, const bool &sble, std::function<bool(const std::vector<std::string> &param)> cb) {
   text = str;
   selected = false;
   selectable = sble;
@@ -97,8 +96,7 @@ void Menu::Update() {
   maxWidth_ = 0;
   for (size_t i = 0; i < items_.size(); i++) {
     maxWidth_ = (items_[i]->text.size() > maxWidth_ ? items_[i]->text.size() : maxWidth_);
-    positions_.push_back(position_ +
-                         glm::vec2(0, i * (MENU_BUTTON_HEIGHT + MENU_BUTTON_HEIGHT_SPACE)));
+    positions_.push_back(position_ + glm::vec2(0, i * (MENU_BUTTON_HEIGHT + MENU_BUTTON_HEIGHT_SPACE)));
     if (items_[i]->selectable) {
       if (items_[i]->selected) {
         colours_.push_back({0.651f, 0.976f, 0.0f, 0.7f});

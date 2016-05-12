@@ -1,13 +1,13 @@
-#include "entity.h"
 #include "scene.h"
+#include "component_camera.h"
+#include "entity.h"
 #include "renderer.h"
 #include <string>
-#include "component_camera.h"
 std::vector<Entity *> Scene::scene_list;
 Components::CmCamera *Scene::activeCamera_;
-//Components::FollowCamera *Scene::playerCamera_;
+// Components::FollowCamera *Scene::playerCamera_;
 
-//void Scene::SetActiveCamera(Components::FollowCamera *fc) { playerCamera_ = fc; }
+// void Scene::SetActiveCamera(Components::FollowCamera *fc) { playerCamera_ = fc; }
 
 void Scene::SetActiveCamera(Components::CmCamera *c) { activeCamera_ = c; }
 
@@ -29,12 +29,12 @@ void Scene::Render(double delta) {
   }
 }
 
-void Scene::Debug(){
+void Scene::Debug() {
   for (auto &e : scene_list) {
-   
-  std::string comps = "";
+
+    std::string comps = "";
     for (auto &c : e->GetComponents()) {
-      comps += "\n\t " + c->token_; 
+      comps += "\n\t " + c->token_;
     }
     LOG(logDEBUG) << e->GetName() << " \t " << tos(e->GetPosition()) << " \t " << tos(e->GetRotationV3()) << comps;
   }

@@ -4,8 +4,7 @@ class PC_Font {
 public:
   static bool Init();
   static bool Shutdown();
-  static void Draw(const uint16_t &fontsizes, const char *text, const glm::vec2 &position,
-                   const glm::vec4 &color);
+  static void Draw(const uint16_t &fontsizes, const char *text, const glm::vec2 &position, const glm::vec4 &color);
   static void Render();
   static void Clear();
 

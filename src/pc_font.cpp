@@ -1,7 +1,7 @@
+#include "pc_font.h"
 #include "common.h"
 #include "filesystem.h"
 #include "freetype-gl/freetype-gl.h"
-#include "pc_font.h"
 #include "pc_shaderprogram.h"
 #include "resource.h"
 #include <glm/gtc/type_ptr.hpp>
@@ -65,8 +65,7 @@ static texture_font_t *GetGoodSizedFont(const uint16_t req) {
   return fonts[i - 1];
 }
 
-void add_text(texture_font_t *font, const char *text, const glm::vec4 &color,
-              const glm::vec2 &pos) {
+void add_text(texture_font_t *font, const char *text, const glm::vec4 &color, const glm::vec2 &pos) {
 
   vec2 pen = {pos.x, pos.y};
   const auto originalx = pen.x;
@@ -119,8 +118,7 @@ void add_text(texture_font_t *font, const char *text, const glm::vec4 &color,
   }
 }
 
-void PC_Font::Draw(const uint16_t &fontsizes, const char *text, const glm::vec2 &position,
-                   const glm::vec4 &color) {
+void PC_Font::Draw(const uint16_t &fontsizes, const char *text, const glm::vec2 &position, const glm::vec4 &color) {
 
   add_text(GetGoodSizedFont(fontsizes), text, color, position);
   frameString << text << position.x << position.y << color.x << color.y << color.z;
@@ -206,8 +204,7 @@ void PC_Font::Render() {
     glUniform1i(t, 0);
   }
 
-  glm::mat4 proj = glm::ortho(0.0f, (float)DEFAULT_RESOLUTION_X, (float)DEFAULT_RESOLUTION_Y, 0.0f,
-                              -100.0f, 100.0f);
+  glm::mat4 proj = glm::ortho(0.0f, (float)DEFAULT_RESOLUTION_X, (float)DEFAULT_RESOLUTION_Y, 0.0f, -100.0f, 100.0f);
   glUniformMatrix4fv(glGetUniformLocation(prog, "projection"), 1, 0, glm::value_ptr(proj));
 
   glBindVertexArray(gVAO);

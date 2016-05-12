@@ -24,8 +24,8 @@ inline int randomColor() {
 
 vec3 GetForwardVector(const quat &q);
 vec3 GetUpVector(const quat &q);
-vec3 GetRightVector(const quat& q);
+vec3 GetRightVector(const quat &q);
 
 const std::string tos(const vec3 &v);
 
-static inline float Frand(){ return static_cast <float> (rand()) / static_cast <float> (RAND_MAX); }
+static inline float Frand() { return static_cast<float>(rand()) / static_cast<float>(RAND_MAX); }

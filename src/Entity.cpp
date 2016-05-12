@@ -17,7 +17,7 @@ const vec3 Entity::GetScale() const { return scale_; }
 const vec3 Entity::GetPosition() const { return position_; }
 
 const quat Entity::GetRotation() const { return rotation_; }
-const vec3 Entity::GetRotationV3() const{ return glm::eulerAngles(GetRotation()); }
+const vec3 Entity::GetRotationV3() const { return glm::eulerAngles(GetRotation()); }
 
 const mat4 Entity::GetTranform() {
   if (changed_) {
@@ -61,7 +61,7 @@ void Entity::SetRotation(const quat &q) {
 
 void Entity::SetVisibility(const bool b) {}
 
-void Entity::SetName(std::string const &name) {name_ = name;}
+void Entity::SetName(std::string const &name) { name_ = name; }
 
 void Entity::Update(const double delta) {
   for (auto c : components_) {
@@ -93,14 +93,11 @@ std::vector<Component *> Entity::GetComponents(std::string const &name) const {
     return list;
   }
   for (auto c : components_) {
-    if (c->token_ == name){
+    if (c->token_ == name) {
       list.push_back(c);
     }
   }
   return list;
 }
 
-
-const std::vector<Component *> Entity::GetComponents() const{
-  return components_;
-}
+const std::vector<Component *> Entity::GetComponents() const { return components_; }

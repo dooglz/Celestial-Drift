@@ -2,8 +2,8 @@
 
 #include "common.h"
 #include "component.h"
-#include "resource.h"
 #include "mesh.h"
+#include "resource.h"
 
 struct Mesh;
 
@@ -13,7 +13,7 @@ class CmTrack : public Component {
 protected:
   // RenderObject* _ro;
   Mesh *mesh_;
-  
+
 public:
   static Mesh *trackMesh;
   static Mesh *lineMesh;

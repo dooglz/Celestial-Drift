@@ -1,27 +1,24 @@
 #include "Physics.h"
+#include "component_shipdriver.h"
 #include "entity.h"
 #include <glm\gtx\norm.hpp>
-#include "component_shipdriver.h"
 
 using namespace glm;
 #define SIMD_EPSILON 1.1920928955078125E-7f
 
-
-
-bool Collide(const glm::vec3 &sphereCenter, const float radius, const glm::vec3 &sphereCenter2,
-  const float radius2, glm::vec3 &point, glm::vec3 &resultNormal, float &depth) {
+bool Collide(const glm::vec3 &sphereCenter, const float radius, const glm::vec3 &sphereCenter2, const float radius2,
+             glm::vec3 &point, glm::vec3 &resultNormal, float &depth) {
   const vec3 dist = sphereCenter2 - sphereCenter;
   depth = length(dist);
   if (depth < (radius2 + radius)) {
     const vec3 dn = normalize(dist);
-    point =  sphereCenter + (dn * radius);
-    resultNormal = dn*-1.0f;
+    point = sphereCenter + (dn * radius);
+    resultNormal = dn * -1.0f;
     depth = (radius2 + radius) - depth;
     return true;
   }
   return false;
 }
-
 
 bool pointInTriangle(const vec3 vertices[], const vec3 &normal, vec3 *p) {
   const vec3 *p1 = &vertices[0];
@@ -79,8 +76,8 @@ float SegmentSqrDistance(const vec3 &from, const vec3 &to, const vec3 &p, vec3 &
   return dot(diff, diff);
 }
 
-bool Collide(const vec3 &sphereCenter, const float radius, const vec3 *vertices, const mat4 &mm,
-             vec3 &point, vec3 &resultNormal, float &depth, bool stationary) {
+bool Collide(const vec3 &sphereCenter, const float radius, const vec3 *vertices, const mat4 &mm, vec3 &point,
+             vec3 &resultNormal, float &depth, bool stationary) {
 
   vec3 normal = cross((vertices[1] - vertices[0]), (vertices[2] - vertices[0]));
   normal = normalize(normal);
@@ -166,18 +163,18 @@ bool Collide(const vec3 &sphereCenter, const float radius, const vec3 *vertices,
   return false;
 }
 
-bool Collide(const vec3 &sphereCenter, const float radius, const vec3 *vertices, const mat4 &mm,
-             vec3 &point, vec3 &resultNormal, float &depth) {
+bool Collide(const vec3 &sphereCenter, const float radius, const vec3 *vertices, const mat4 &mm, vec3 &point,
+             vec3 &resultNormal, float &depth) {
   return Collide(sphereCenter, radius, vertices, mm, point, resultNormal, depth, false);
 }
 
-bool Collide(const vec3 &sphereCenter, const float radius, const vec3 *vertices, vec3 &point,
-             vec3 &resultNormal, float &depth) {
+bool Collide(const vec3 &sphereCenter, const float radius, const vec3 *vertices, vec3 &point, vec3 &resultNormal,
+             float &depth) {
   const mat4 a;
   return Collide(sphereCenter, radius, vertices, a, point, resultNormal, depth, true);
 }
 
-void Resolve(Entity& ent, Components::CmShipdriver& sd, vec3& resultNormal, float& depth){
+void Resolve(Entity &ent, Components::CmShipdriver &sd, vec3 &resultNormal, float &depth) {
   // LOG(logERROR) << depth << " " << i << " " << tos(point) << " " <<tos(resultNormal);
   /*
   Renderer::DrawCross(p[0], 5.0f, vec4(1.0f, 0.5f, 1.0f, 1.0f));

@@ -1,5 +1,5 @@
-#include "common.h"
 #include "CommandParser.h"
+#include "common.h"
 #include <glm/glm.hpp>
 #include <string>
 #include <vector>
@@ -41,8 +41,7 @@ private:
 struct MenuItem {
 public:
   MenuItem();
-  MenuItem(const string &str, const bool &selectable,
-           std::function<bool(const std::vector<std::string> &param)> cb);
+  MenuItem(const string &str, const bool &selectable, std::function<bool(const std::vector<std::string> &param)> cb);
   ~MenuItem();
   void Render(const glm::vec2 &pos, const glm::vec2 &size);
   Menu *parent;

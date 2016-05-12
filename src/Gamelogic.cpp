@@ -35,8 +35,8 @@ bool inMenu;
 bool debugcmra;
 string controls = "";
 
-const string versionText = "WIP BUILD:" + string(GIT_HASH) + " - " +
-                           string(string(GIT_DATE), 0, string(GIT_DATE).length() - 6);
+const string versionText =
+    "WIP BUILD:" + string(GIT_HASH) + " - " + string(string(GIT_DATE), 0, string(GIT_DATE).length() - 6);
 
 Gamestate GameLogic::gamestate;
 RaceState GameLogic::racestate;
@@ -199,8 +199,7 @@ bool GameLogic::Run() {
   texm.hasColours = false;
   texm.hasIndicies = true;
   texm.numVerts = 4;
-  texm.vertexData = {
-      {-1.0f, 1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}};
+  texm.vertexData = {{-1.0f, 1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}};
   texm.uvs = {{0.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}};
   texm.indices = {0, 2, 1, 0, 3, 2};
   texm.shaderPref = "texture";
@@ -268,10 +267,8 @@ bool GameLogic::Run() {
     for (size_t i = 0; i < Components::CmTrack::trackMesh->indices.size(); i += 3) {
       vec3 p[3];
       p[0] = Components::CmTrack::transformedPositions[Components::CmTrack::trackMesh->indices[i]];
-      p[1] =
-          Components::CmTrack::transformedPositions[Components::CmTrack::trackMesh->indices[i + 1]];
-      p[2] =
-          Components::CmTrack::transformedPositions[Components::CmTrack::trackMesh->indices[i + 2]];
+      p[1] = Components::CmTrack::transformedPositions[Components::CmTrack::trackMesh->indices[i + 1]];
+      p[2] = Components::CmTrack::transformedPositions[Components::CmTrack::trackMesh->indices[i + 2]];
       vec3 point;
       vec3 resultNormal;
 
@@ -294,8 +291,7 @@ bool GameLogic::Run() {
         vec3 point;
         vec3 resultNormal;
         float depth;
-        if (Collide(ships[i].GetPosition(), 1.0f, ships[j].GetPosition(), 1.0f, point, resultNormal,
-                    depth)) {
+        if (Collide(ships[i].GetPosition(), 1.0f, ships[j].GetPosition(), 1.0f, point, resultNormal, depth)) {
           //   cout << i << " " << j << tos(point) << tos(resultNormal) << depth << endl;
           std::vector<Component *> cc = ships[i].GetComponents("ShipDriver");
           Resolve(ships[i], *(Components::CmShipdriver *)(cc[0]), resultNormal, depth);
@@ -303,15 +299,13 @@ bool GameLogic::Run() {
       }
     }
 
-    const uint32_t plapcount =
-        ((Components::CmShipdriver *)(ships[0].GetComponents("ShipDriver")[0]))->lapcount;
+    const uint32_t plapcount = ((Components::CmShipdriver *)(ships[0].GetComponents("ShipDriver")[0]))->lapcount;
     const uint32_t pwaypointIndex =
         ((Components::CmShipdriver *)(ships[0].GetComponents("ShipDriver")[0]))->waypointIndex;
     uint32_t position = 1;
 
     for (size_t i = 1; i < SHIPCOUNT; i++) {
-      const uint32_t lapcount =
-          ((Components::CmShipdriver *)(ships[i].GetComponents("ShipDriver")[0]))->lapcount;
+      const uint32_t lapcount = ((Components::CmShipdriver *)(ships[i].GetComponents("ShipDriver")[0]))->lapcount;
       if (lapcount > plapcount) {
         ++position;
       } else if (lapcount == plapcount) {

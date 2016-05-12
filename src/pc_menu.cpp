@@ -1,5 +1,5 @@
-#include "GL/glew.h"
 #include "pc_menu.h"
+#include "GL/glew.h"
 #include "pc_shaderprogram.h"
 #include "resource.h"
 #include <glm/gtc/type_ptr.hpp>
@@ -57,16 +57,14 @@ void *Prep() {
   return r;
 }
 
-void Update(void *deets, const glm::vec2 *verts, const vector<glm::vec2> &positions,
-            const vector<glm::vec4> &colours) {
+void Update(void *deets, const glm::vec2 *verts, const vector<glm::vec2> &positions, const vector<glm::vec4> &colours) {
 
   auto r = static_cast<RBO *>(deets);
   glBindBuffer(GL_ARRAY_BUFFER, r->gVBO);
   glBufferData(GL_ARRAY_BUFFER, 5 * sizeof(glm::vec2), &verts[0], GL_STATIC_DRAW);
 
   glBindBuffer(GL_ARRAY_BUFFER, r->gPBO);
-  glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(glm::vec2), &positions[0],
-               GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(glm::vec2), &positions[0], GL_STATIC_DRAW);
 
   glBindBuffer(GL_ARRAY_BUFFER, r->gCBO);
   glBufferData(GL_ARRAY_BUFFER, colours.size() * sizeof(glm::vec4), &colours[0], GL_STATIC_DRAW);
@@ -82,8 +80,7 @@ void Render(void *deets, size_t count) {
   glBindVertexArray(r->gVAO);
   const auto prog = Storage<ShaderProgram>::Get("2dmenu")->program;
   glUseProgram(prog);
-  glm::mat4 proj = glm::ortho(0.0f, (float)DEFAULT_RESOLUTION_X, (float)DEFAULT_RESOLUTION_Y, 0.0f,
-                              -100.0f, 100.0f);
+  glm::mat4 proj = glm::ortho(0.0f, (float)DEFAULT_RESOLUTION_X, (float)DEFAULT_RESOLUTION_Y, 0.0f, -100.0f, 100.0f);
   glUniformMatrix4fv(glGetUniformLocation(prog, "projection"), 1, 0, glm::value_ptr(proj));
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gIBO);

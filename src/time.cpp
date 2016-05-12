@@ -5,7 +5,6 @@
 #include <windows.h>
 #endif
 
-
 std::string NowIsoString() {
   const std::time_t t = std::time(nullptr);
   char c[28];
@@ -64,41 +63,31 @@ std::string NowTimeString() {
     currentTimeRounded -= std::chrono::seconds(1);
   }
   const unsigned int milliseconds =
-      std::chrono::duration_cast<std::chrono::duration<int, std::milli>>(
-          currentTime - currentTimeRounded).count();
-  return string(c) + ":" + to_string(milliseconds) + (milliseconds < 100 ? "0" : "") +
-         (milliseconds < 10 ? "0" : "");
+      std::chrono::duration_cast<std::chrono::duration<int, std::milli>>(currentTime - currentTimeRounded).count();
+  return string(c) + ":" + to_string(milliseconds) + (milliseconds < 100 ? "0" : "") + (milliseconds < 10 ? "0" : "");
 }
-
-
 
 Timer::Timer() { Start(); }
 void Timer::Start() { start = chrono::high_resolution_clock::now(); }
 void Timer::Stop() { end = chrono::high_resolution_clock::now(); }
 const chrono::high_resolution_clock::duration Timer::Duration() { return end - start; }
-unsigned long long Timer::Duration_NS() {
-  return chrono::duration_cast<chrono::nanoseconds>(Duration()).count();
-};
+unsigned long long Timer::Duration_NS() { return chrono::duration_cast<chrono::nanoseconds>(Duration()).count(); };
 
 #if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
-namespace
-{
-  const long long g_Frequency = []() -> long long
-  {
-    LARGE_INTEGER frequency;
-    QueryPerformanceFrequency(&frequency);
-    return frequency.QuadPart;
-  }();
+namespace {
+const long long g_Frequency = []() -> long long {
+  LARGE_INTEGER frequency;
+  QueryPerformanceFrequency(&frequency);
+  return frequency.QuadPart;
+}();
 }
 
-HighResClock::time_point HighResClock::now()
-{
+HighResClock::time_point HighResClock::now() {
   LARGE_INTEGER count;
   QueryPerformanceCounter(&count);
   return time_point(duration(count.QuadPart * static_cast<rep>(period::den) / g_Frequency));
 }
 
 #else
- 
-#endif
 
+#endif

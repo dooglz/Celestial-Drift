@@ -1,6 +1,6 @@
 #pragma warning(disable : 4996)
-#include "common.h"
 #include "cvar.h"
+#include "common.h"
 #include <cassert>
 #include <string>
 #include <thread>
@@ -15,8 +15,8 @@ ConVar::ConVar(const char *pName, const char *pDefaultValue, int flags, const ch
   Create(pName, pDefaultValue, flags, pHelpString);
 }
 
-ConVar::ConVar(const char *pName, const char *pDefaultValue, int flags, const char *pHelpString,
-               bool bMin, float fMin, bool bMax, float fMax) {
+ConVar::ConVar(const char *pName, const char *pDefaultValue, int flags, const char *pHelpString, bool bMin, float fMin,
+               bool bMax, float fMax) {
   Create(pName, pDefaultValue, flags, pHelpString, bMin, fMin, bMax, fMax);
 }
 
@@ -25,8 +25,8 @@ ConVar::ConVar(const char *pName, const char *pDefaultValue, int flags, const ch
   Create(pName, pDefaultValue, flags, pHelpString, false, 0.0, false, 0.0, callback);
 }
 
-ConVar::ConVar(const char *pName, const char *pDefaultValue, int flags, const char *pHelpString,
-               bool bMin, float fMin, bool bMax, float fMax, FnChangeCallback_t callback) {
+ConVar::ConVar(const char *pName, const char *pDefaultValue, int flags, const char *pHelpString, bool bMin, float fMin,
+               bool bMax, float fMax, FnChangeCallback_t callback) {
   Create(pName, pDefaultValue, flags, pHelpString, bMin, fMin, bMax, fMax, callback);
 }
 
@@ -220,9 +220,8 @@ void ConVar::ChangeStringValue(const char *tempVal, float flOldValue) {
   }
 }
 
-void ConVar::Create(const char *pName, const char *pDefaultValue, int flags /*= 0*/,
-                    const char *pHelpString /*= NULL*/, bool bMin /*= false*/, float fMin /*= 0.0*/,
-                    bool bMax /*= false*/, float fMax /*= false*/,
+void ConVar::Create(const char *pName, const char *pDefaultValue, int flags /*= 0*/, const char *pHelpString /*= NULL*/,
+                    bool bMin /*= false*/, float fMin /*= 0.0*/, bool bMax /*= false*/, float fMax /*= false*/,
                     FnChangeCallback_t callback /*= NULL*/) {
   // Name should be static data
   SetDefault(pDefaultValue);

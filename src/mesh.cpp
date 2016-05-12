@@ -1,6 +1,6 @@
+#include "mesh.h"
 #include "filesystem.h"
 #include "maths.h"
-#include "mesh.h"
 #include "resource.h"
 //#include "pc_shaderprogram.h"
 #include "tiny_obj_loader.h"
@@ -33,7 +33,7 @@ Mesh *ParseOBJFile(fileIO::Textfile *tf) {
   std::vector<tinyobj::shape_t> shapes;
   std::vector<tinyobj::material_t> materials;
   string err;
-  tinyobj::LoadObj(shapes, materials, err, *tf,false);
+  tinyobj::LoadObj(shapes, materials, err, *tf, false);
 
   assert(shapes.size() > 0);
 
@@ -79,8 +79,7 @@ Mesh *ParseOBJFile(fileIO::Textfile *tf) {
     if (tm->lines.size() > 0) {
       m->hasLines = true;
       m->lines = tm->lines;
-    }
-    else {
+    } else {
       m->hasLines = false;
     }
 

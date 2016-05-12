@@ -1,6 +1,6 @@
+#include "pc_video.h"
 #include "GL/glew.h"
 #include "common.h"
-#include "pc_video.h"
 #include <GLFW/glfw3.h>
 
 unsigned int PC_Video::FB_SIZE_X = DEFAULT_RESOLUTION_X;
@@ -8,12 +8,12 @@ unsigned int PC_Video::FB_SIZE_Y = DEFAULT_RESOLUTION_Y;
 
 GLFWwindow *PC_Video::window_;
 
-void PC_Video::Resize(GLFWwindow* window, int width, int height) { 
-	LOG(logINFO) << "window Resized to " << width << " " << height;
-	FB_SIZE_X = width;
-	FB_SIZE_Y = height;
-	glViewport(0, 0, width, height);
-	return ; 
+void PC_Video::Resize(GLFWwindow *window, int width, int height) {
+  LOG(logINFO) << "window Resized to " << width << " " << height;
+  FB_SIZE_X = width;
+  FB_SIZE_Y = height;
+  glViewport(0, 0, width, height);
+  return;
 }
 
 bool PC_Video::Init() {
@@ -34,7 +34,7 @@ bool PC_Video::Init() {
     return false;
   }
 #if defined(_DEBUG)
- //glfwSetWindowPos(window_, 5400, 100);
+// glfwSetWindowPos(window_, 5400, 100);
 #endif
   /* Make the window's context current */
   glfwMakeContextCurrent(window_);

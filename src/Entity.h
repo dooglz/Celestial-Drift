@@ -50,8 +50,7 @@ public:
   std::vector<Component *> GetComponents(std::string const &name) const;
 
   template <typename T> T *const getComponent() {
-    for (std::vector<Component *>::iterator it = components_.begin(); it != components_.end();
-         ++it) {
+    for (std::vector<Component *>::iterator it = components_.begin(); it != components_.end(); ++it) {
       // printf("Checking %s against %s \n", typeid(**it).name(),
       // typeid(T).name());
       if (&typeid(**it) == &typeid(T)) {
@@ -60,5 +59,4 @@ public:
     }
     return NULL;
   }
-
 };

@@ -1,16 +1,14 @@
 #include "component_mesh_renderer.h"
-#include "resource.h"
-#include "renderer.h"
 #include "entity.h"
+#include "renderer.h"
+#include "resource.h"
 Components::CmMeshRenderer::CmMeshRenderer() : Component("MeshRenderer") {}
 
 Components::CmMeshRenderer::~CmMeshRenderer() {}
 
 void Components::CmMeshRenderer::SetMesh(Mesh *msh) { mesh_ = msh; }
 
-void Components::CmMeshRenderer::SetMesh(const std::string &meshname) {
-  SetMesh(Storage<Mesh>::Get(meshname));
-}
+void Components::CmMeshRenderer::SetMesh(const std::string &meshname) { SetMesh(Storage<Mesh>::Get(meshname)); }
 
 void Components::CmMeshRenderer::Render() {
   if (!mesh_->loadedLocal) {

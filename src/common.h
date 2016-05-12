@@ -4,12 +4,12 @@
 #include "platform.h"
 #include <stdint.h>
 
-#ifndef GIT_HASH 
+#ifndef GIT_HASH
 #define GIT_HASH "00"
 #define GIT_DATE "00"
 #endif
 
-#define GAME_NAME (std::string("CelestialDrift ")+GIT_HASH)
+#define GAME_NAME (std::string("CelestialDrift ") + GIT_HASH)
 
 #if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
 
@@ -65,9 +65,8 @@ InputIt find_if(InputIt first, InputIt last, UnaryPredicate p)
   }
   return last;
 }*/
-template <typename T> std::string toStrDecPt(const uint16_t& dp, const T& i){
+template <typename T> std::string toStrDecPt(const uint16_t &dp, const T &i) {
   std::stringstream stream;
   stream << fixed << setprecision(dp) << i;
   return stream.str();
 }
-

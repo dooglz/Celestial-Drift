@@ -16,14 +16,13 @@
 
 using namespace std;
 
-const Command CommandParser::inbuilt_commands[]{
-    {"help", "Show all commands", 0, Cmd_Help},
-    {"get", "Get cvar (use * for list)", 1, Cmd_get},
-    {"set", "Set cvar", 2, Cmd_set},
-    {"reset", "Reset cvar to defaults", 1, Cmd_Reset},
-    {"bind", "bind key to function", 3, Cmd_Bind},
-    { "scene", "show scene info", 0, Cmd_Scene },
-    {"listInputs", "shows all inputs and bindings", 0, Cmd_ListInputs}};
+const Command CommandParser::inbuilt_commands[]{{"help", "Show all commands", 0, Cmd_Help},
+                                                {"get", "Get cvar (use * for list)", 1, Cmd_get},
+                                                {"set", "Set cvar", 2, Cmd_set},
+                                                {"reset", "Reset cvar to defaults", 1, Cmd_Reset},
+                                                {"bind", "bind key to function", 3, Cmd_Bind},
+                                                {"scene", "show scene info", 0, Cmd_Scene},
+                                                {"listInputs", "shows all inputs and bindings", 0, Cmd_ListInputs}};
 
 vector<Command> CommandParser::commands;
 
@@ -238,7 +237,7 @@ Command::Command(const char *pname, const char *pdescription, const uint8_t ppar
   description = pdescription;
 }
 */
-bool CommandParser::Cmd_Scene(const std::vector<std::string> &params){
+bool CommandParser::Cmd_Scene(const std::vector<std::string> &params) {
   Scene::Debug();
   return true;
 }

@@ -1,7 +1,7 @@
 #pragma once
+#include "genericInput.h"
 #include <string>
 #include <vector>
-#include "genericInput.h"
 
 #if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
 #include "pc_input.h"

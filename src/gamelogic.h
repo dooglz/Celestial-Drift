@@ -1,7 +1,7 @@
 #pragma once
 #include "common.h"
 enum Gamestate { INIT, MAINMENU, GAME, PAUSE, SHUTDOWN };
-enum RaceState { UNINIT,READY, RUNNING, END };
+enum RaceState { UNINIT, READY, RUNNING, END };
 
 class GameLogic {
 public:

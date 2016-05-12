@@ -292,11 +292,9 @@ static vertex_index parseTriple(const char *&token, int vsize, int vnsize, int v
   return vi;
 }
 
-static unsigned int updateVertex(std::map<vertex_index, unsigned int> &vertexCache,
-                                 std::vector<float> &positions, std::vector<float> &normals,
-                                 std::vector<float> &texcoords,
-                                 const std::vector<float> &in_positions,
-                                 const std::vector<float> &in_normals,
+static unsigned int updateVertex(std::map<vertex_index, unsigned int> &vertexCache, std::vector<float> &positions,
+                                 std::vector<float> &normals, std::vector<float> &texcoords,
+                                 const std::vector<float> &in_positions, const std::vector<float> &in_normals,
                                  const std::vector<float> &in_texcoords, const vertex_index &i) {
   const std::map<vertex_index, unsigned int>::iterator it = vertexCache.find(i);
 
@@ -352,26 +350,21 @@ void InitMaterial(material_t &material) {
 }
 
 static bool exportFaceGroupToShape(shape_t &shape, std::map<vertex_index, unsigned int> vertexCache,
-                                   const std::vector<float> &in_positions,
-                                   const std::vector<float> &in_normals,
-                                   const std::vector<float> &in_texcoords,
-                                   const std::vector<uint32_t> &in_lines,
-                                   const std::vector<std::vector<vertex_index>> &faceGroup,
-                                   std::vector<tag_t> &tags, const int material_id,
-                                   const std::string &name, bool clearCache, bool triangulate) {
-	shape.mesh.lines = in_lines;
+                                   const std::vector<float> &in_positions, const std::vector<float> &in_normals,
+                                   const std::vector<float> &in_texcoords, const std::vector<uint32_t> &in_lines,
+                                   const std::vector<std::vector<vertex_index>> &faceGroup, std::vector<tag_t> &tags,
+                                   const int material_id, const std::string &name, bool clearCache, bool triangulate) {
+  shape.mesh.lines = in_lines;
 
   if (faceGroup.empty()) {
-	  if (!in_lines.empty()) {
-		  shape.name = name;
-		  shape.mesh.positions = in_positions;
-		  return true;
-	  }
+    if (!in_lines.empty()) {
+      shape.name = name;
+      shape.mesh.positions = in_positions;
+      return true;
+    }
     return false;
   }
 
-  
-  
   // Flatten vertices and indices
   for (size_t i = 0; i < faceGroup.size(); i++) {
     const std::vector<vertex_index> &face = faceGroup[i];
@@ -389,15 +382,12 @@ static bool exportFaceGroupToShape(shape_t &shape, std::map<vertex_index, unsign
         i1 = i2;
         i2 = face[k];
 
-        unsigned int v0 =
-            updateVertex(vertexCache, shape.mesh.positions, shape.mesh.normals,
-                         shape.mesh.texcoords, in_positions, in_normals, in_texcoords, i0);
-        unsigned int v1 =
-            updateVertex(vertexCache, shape.mesh.positions, shape.mesh.normals,
-                         shape.mesh.texcoords, in_positions, in_normals, in_texcoords, i1);
-        unsigned int v2 =
-            updateVertex(vertexCache, shape.mesh.positions, shape.mesh.normals,
-                         shape.mesh.texcoords, in_positions, in_normals, in_texcoords, i2);
+        unsigned int v0 = updateVertex(vertexCache, shape.mesh.positions, shape.mesh.normals, shape.mesh.texcoords,
+                                       in_positions, in_normals, in_texcoords, i0);
+        unsigned int v1 = updateVertex(vertexCache, shape.mesh.positions, shape.mesh.normals, shape.mesh.texcoords,
+                                       in_positions, in_normals, in_texcoords, i1);
+        unsigned int v2 = updateVertex(vertexCache, shape.mesh.positions, shape.mesh.normals, shape.mesh.texcoords,
+                                       in_positions, in_normals, in_texcoords, i2);
         shape.mesh.indices.push_back(v0);
         shape.mesh.indices.push_back(v1);
         shape.mesh.indices.push_back(v2);
@@ -408,9 +398,8 @@ static bool exportFaceGroupToShape(shape_t &shape, std::map<vertex_index, unsign
     } else {
 
       for (size_t k = 0; k < npolys; k++) {
-        unsigned int v =
-            updateVertex(vertexCache, shape.mesh.positions, shape.mesh.normals,
-                         shape.mesh.texcoords, in_positions, in_normals, in_texcoords, face[k]);
+        unsigned int v = updateVertex(vertexCache, shape.mesh.positions, shape.mesh.normals, shape.mesh.texcoords,
+                                      in_positions, in_normals, in_texcoords, face[k]);
 
         shape.mesh.indices.push_back(v);
       }
@@ -429,8 +418,7 @@ static bool exportFaceGroupToShape(shape_t &shape, std::map<vertex_index, unsign
   return true;
 }
 
-void LoadMtl(std::map<std::string, int> &material_map, std::vector<material_t> &materials,
-             std::istream &inStream) {
+void LoadMtl(std::map<std::string, int> &material_map, std::vector<material_t> &materials, std::istream &inStream) {
 
   // Create a default material anyway.
   material_t material;
@@ -473,8 +461,7 @@ void LoadMtl(std::map<std::string, int> &material_map, std::vector<material_t> &
     if ((0 == strncmp(token, "newmtl", 6)) && isSpace((token[6]))) {
       // flush previous material.
       if (!material.name.empty()) {
-        material_map.insert(
-            std::pair<std::string, int>(material.name, static_cast<int>(materials.size())));
+        material_map.insert(std::pair<std::string, int>(material.name, static_cast<int>(materials.size())));
         materials.push_back(material);
       }
 
@@ -651,8 +638,7 @@ void LoadMtl(std::map<std::string, int> &material_map, std::vector<material_t> &
     }
   }
   // flush last material.
-  material_map.insert(
-      std::pair<std::string, int>(material.name, static_cast<int>(materials.size())));
+  material_map.insert(std::pair<std::string, int>(material.name, static_cast<int>(materials.size())));
   materials.push_back(material);
 }
 
@@ -702,8 +688,7 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
 
 bool LoadObj(std::vector<shape_t> &shapes,       // [output]
              std::vector<material_t> &materials, // [output]
-             std::string &err, std::istream &inStream, MaterialReader &readMatFn,
-             bool triangulate) {
+             std::string &err, std::istream &inStream, MaterialReader &readMatFn, bool triangulate) {
   std::stringstream errss;
 
   std::vector<float> v;
@@ -806,9 +791,8 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
 
       std::vector<vertex_index> face;
       while (!isNewLine(token[0])) {
-        vertex_index vi =
-            parseTriple(token, static_cast<int>(v.size() / 3), static_cast<int>(vn.size() / 3),
-                        static_cast<int>(vt.size() / 2));
+        vertex_index vi = parseTriple(token, static_cast<int>(v.size() / 3), static_cast<int>(vn.size() / 3),
+                                      static_cast<int>(vt.size() / 2));
         face.push_back(vi);
         size_t n = strspn(token, " \t\r");
         token += n;
@@ -831,8 +815,8 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
 #endif
 
       // Create face group per material.
-      bool ret = exportFaceGroupToShape(shape, vertexCache, v, vn, vt, vl, faceGroup, tags, material,
-                                        name, true, triangulate);
+      bool ret =
+          exportFaceGroupToShape(shape, vertexCache, v, vn, vt, vl, faceGroup, tags, material, name, true, triangulate);
       if (ret) {
         shapes.push_back(shape);
       }
@@ -875,8 +859,8 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
     if (token[0] == 'g' && isSpace((token[1]))) {
 
       // flush previous face group.
-      bool ret = exportFaceGroupToShape(shape, vertexCache, v, vn, vt, vl, faceGroup, tags, material,
-                                        name, true, triangulate);
+      bool ret =
+          exportFaceGroupToShape(shape, vertexCache, v, vn, vt, vl, faceGroup, tags, material, name, true, triangulate);
       if (ret) {
         shapes.push_back(shape);
       }
@@ -909,8 +893,8 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
     if (token[0] == 'o' && isSpace((token[1]))) {
 
       // flush previous face group.
-      bool ret = exportFaceGroupToShape(shape, vertexCache, v, vn, vt, vl, faceGroup, tags, material,
-                                        name, true, triangulate);
+      bool ret =
+          exportFaceGroupToShape(shape, vertexCache, v, vn, vt, vl, faceGroup, tags, material, name, true, triangulate);
       if (ret) {
         shapes.push_back(shape);
       }
@@ -972,8 +956,8 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
     // Ignore unknown command.
   }
 
-  bool ret = exportFaceGroupToShape(shape, vertexCache, v, vn, vt,vl, faceGroup, tags, material, name,
-                                    true, triangulate);
+  bool ret =
+      exportFaceGroupToShape(shape, vertexCache, v, vn, vt, vl, faceGroup, tags, material, name, true, triangulate);
   if (ret) {
     shapes.push_back(shape);
   }
@@ -1088,7 +1072,7 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
     if (token[0] == 'l' && isSpace((token[1]))) {
       token += 2;
       token += strspn(token, " \t");
-      unsigned int a = atoi(token) -1;
+      unsigned int a = atoi(token) - 1;
       token += strcspn(token, "/ \t\r");
       token++;
       unsigned int b = atoi(token) - 1;
@@ -1097,7 +1081,6 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
       continue;
     }
 
-
     // face
     if (token[0] == 'f' && isSpace((token[1]))) {
       token += 2;
@@ -1105,9 +1088,8 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
 
       std::vector<vertex_index> face;
       while (!isNewLine(token[0])) {
-        vertex_index vi =
-            parseTriple(token, static_cast<int>(v.size() / 3), static_cast<int>(vn.size() / 3),
-                        static_cast<int>(vt.size() / 2));
+        vertex_index vi = parseTriple(token, static_cast<int>(v.size() / 3), static_cast<int>(vn.size() / 3),
+                                      static_cast<int>(vt.size() / 2));
         face.push_back(vi);
         size_t n = strspn(token, " \t\r");
         token += n;
@@ -1130,8 +1112,8 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
 #endif
 
       // Create face group per material.
-      bool ret = exportFaceGroupToShape(shape, vertexCache, v, vn, vt,vl, faceGroup, tags, material,
-                                        name, true, triangulate);
+      bool ret =
+          exportFaceGroupToShape(shape, vertexCache, v, vn, vt, vl, faceGroup, tags, material, name, true, triangulate);
       if (ret) {
         shapes.push_back(shape);
       }
@@ -1174,8 +1156,8 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
     if (token[0] == 'g' && isSpace((token[1]))) {
 
       // flush previous face group.
-      bool ret = exportFaceGroupToShape(shape, vertexCache, v, vn, vt, vl, faceGroup, tags, material,
-                                        name, true, triangulate);
+      bool ret =
+          exportFaceGroupToShape(shape, vertexCache, v, vn, vt, vl, faceGroup, tags, material, name, true, triangulate);
       if (ret) {
         shapes.push_back(shape);
       }
@@ -1208,8 +1190,8 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
     if (token[0] == 'o' && isSpace((token[1]))) {
 
       // flush previous face group.
-      bool ret = exportFaceGroupToShape(shape, vertexCache, v, vn, vt, vl, faceGroup, tags, material,
-                                        name, true, triangulate);
+      bool ret =
+          exportFaceGroupToShape(shape, vertexCache, v, vn, vt, vl, faceGroup, tags, material, name, true, triangulate);
       if (ret) {
         shapes.push_back(shape);
       }
@@ -1271,8 +1253,8 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
     // Ignore unknown command.
   }
 
-  bool ret = exportFaceGroupToShape(shape, vertexCache, v, vn, vt,vl, faceGroup, tags, material, name,
-                                    true, triangulate);
+  bool ret =
+      exportFaceGroupToShape(shape, vertexCache, v, vn, vt, vl, faceGroup, tags, material, name, true, triangulate);
   if (ret) {
     shapes.push_back(shape);
   }

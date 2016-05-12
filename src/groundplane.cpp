@@ -13,8 +13,7 @@ void GroundPlane::Init() {
   plane_mesh.hasColours = false;
   plane_mesh.hasIndicies = true;
   plane_mesh.numVerts = 4;
-  plane_mesh.vertexData = {
-      {-1.0f, 0.0f, 1.0f}, {-1.0f, 0.0f, -1.0f}, {1.0f, 0.0f, -1.0f}, {1.0f, 0.0f, 1.0f}};
+  plane_mesh.vertexData = {{-1.0f, 0.0f, 1.0f}, {-1.0f, 0.0f, -1.0f}, {1.0f, 0.0f, -1.0f}, {1.0f, 0.0f, 1.0f}};
   plane_mesh.indices = {0, 2, 1, 0, 3, 2};
   plane_mesh.shaderPref = "grid";
   Renderer::LoadMesh(&plane_mesh);

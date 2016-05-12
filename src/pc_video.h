@@ -14,7 +14,8 @@ public:
 
 protected:
   static GLFWwindow *window_;
-  static void Resize(GLFWwindow* window, int width, int height);
+  static void Resize(GLFWwindow *window, int width, int height);
+
 private:
   PC_Video() = delete;
   ~PC_Video() = delete;

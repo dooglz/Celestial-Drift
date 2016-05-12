@@ -1,9 +1,9 @@
 #pragma once
 
+#include "filesystem.h"
 #include <map>
 #include <string>
 #include <vector>
-#include "filesystem.h"
 
 namespace tinyobj {
 

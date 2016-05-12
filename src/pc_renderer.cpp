@@ -1,4 +1,6 @@
+#include "GL\glew.h"
 #include "pc_renderer.h"
+#include "TextureManager.h"
 #include "common.h"
 #include "component_camera.h"
 #include "glm/glm.hpp"
@@ -8,7 +10,6 @@
 #include "resource.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
-#include "TextureManager.h"
 glm::mat4 PC_Renderer::vp_;
 std::vector<std::pair<const glm::vec3, const glm::vec4>> PC_Renderer::linebuffer;
 
@@ -39,8 +40,7 @@ void PC_Renderer::DrawCross(const glm::vec3 &p1, const float size, const glm::ve
   DrawLine(p1 + glm::vec3(0, 0, size), p1 - glm::vec3(0, 0, size), col, col);
 }
 
-void PC_Renderer::DrawLine(const glm::vec3 &p1, const glm::vec3 &p2, const glm::vec4 &col1,
-                           const glm::vec4 &col2) {
+void PC_Renderer::DrawLine(const glm::vec3 &p1, const glm::vec3 &p2, const glm::vec4 &col1, const glm::vec4 &col2) {
   linebuffer.push_back(std::make_pair(p1, col1));
   linebuffer.push_back(std::make_pair(p2, col2));
 }
@@ -48,14 +48,12 @@ void PC_Renderer::DrawLine(const glm::vec3 &p1, const glm::vec3 &p2, const glm::
 static glm::mat4 vps_;
 void PC_Renderer::SetViewMatrix(const glm::mat4 &vpm) {
   glm::mat4 Projection =
-      glm::perspective(glm::radians(45.0f),
-                       (float)DEFAULT_RESOLUTION_X / (float)DEFAULT_RESOLUTION_Y, 0.1f, 1000.0f);
+      glm::perspective(glm::radians(45.0f), (float)DEFAULT_RESOLUTION_X / (float)DEFAULT_RESOLUTION_Y, 0.1f, 1000.0f);
   vp_ = Projection * vpm;
-  
+
   vps_ = vpm;
   vps_[3] = glm::vec4(0, 0, 0, 1);
-  vps_ = Projection *vps_;
-
+  vps_ = Projection * vps_;
 }
 
 void PC_Renderer::RenderMesh(const Mesh &m, const mat4 &modelMatrix) {
@@ -138,8 +136,7 @@ void PC_Renderer::RenderMesh(const Mesh &m, const mat4 &modelMatrix) {
   glUseProgram(NULL);
 }
 
-void PC_Renderer::BindTexture(const unsigned int texID, const unsigned int texUnit,
-                              const std::string &shadername) {
+void PC_Renderer::BindTexture(const unsigned int texID, const unsigned int texUnit, const std::string &shadername) {
   const auto prog = Storage<ShaderProgram>::Get(shadername)->program;
   glUseProgram(prog);
   CheckGL();
@@ -168,12 +165,11 @@ void PC_Renderer::CreateSkybox(const std::string (&imgs)[6]) {
 
   glBindTexture(GL_TEXTURE_CUBE_MAP, tex_cube);
 
-  const int sides[] = {GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-                       GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-                       GL_TEXTURE_CUBE_MAP_NEGATIVE_X, GL_TEXTURE_CUBE_MAP_POSITIVE_X};
+  const int sides[] = {GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+                       GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, GL_TEXTURE_CUBE_MAP_POSITIVE_X};
 
   for (size_t i = 0; i < 6; i++) {
-    TextureManager::Inst()->LoadTexture(imgs[i].c_str(),0,false, sides[i]);
+    TextureManager::Inst()->LoadTexture(imgs[i].c_str(), 0, false, sides[i]);
   }
 
   // format cube map texture
@@ -183,18 +179,15 @@ void PC_Renderer::CreateSkybox(const std::string (&imgs)[6]) {
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-  float points[] = {-10.0f, 10.0f,  -10.0f, -10.0f, -10.0f, -10.0f, 10.0f,  -10.0f, -10.0f,
-                    10.0f,  -10.0f, -10.0f, 10.0f,  10.0f,  -10.0f, -10.0f, 10.0f,  -10.0f,
-                    -10.0f, -10.0f, 10.0f,  -10.0f, -10.0f, -10.0f, -10.0f, 10.0f,  -10.0f,
-                    -10.0f, 10.0f,  -10.0f, -10.0f, 10.0f,  10.0f,  -10.0f, -10.0f, 10.0f,
-                    10.0f,  -10.0f, -10.0f, 10.0f,  -10.0f, 10.0f,  10.0f,  10.0f,  10.0f,
-                    10.0f,  10.0f,  10.0f,  10.0f,  10.0f,  -10.0f, 10.0f,  -10.0f, -10.0f,
-                    -10.0f, -10.0f, 10.0f,  -10.0f, 10.0f,  10.0f,  10.0f,  10.0f,  10.0f,
-                    10.0f,  10.0f,  10.0f,  10.0f,  -10.0f, 10.0f,  -10.0f, -10.0f, 10.0f,
-                    -10.0f, 10.0f,  -10.0f, 10.0f,  10.0f,  -10.0f, 10.0f,  10.0f,  10.0f,
-                    10.0f,  10.0f,  10.0f,  -10.0f, 10.0f,  10.0f,  -10.0f, 10.0f,  -10.0f,
-                    -10.0f, -10.0f, -10.0f, -10.0f, -10.0f, 10.0f,  10.0f,  -10.0f, -10.0f,
-                    10.0f,  -10.0f, -10.0f, -10.0f, -10.0f, 10.0f,  10.0f,  -10.0f, 10.0f};
+  float points[] = {-10.0f, 10.0f,  -10.0f, -10.0f, -10.0f, -10.0f, 10.0f,  -10.0f, -10.0f, 10.0f,  -10.0f, -10.0f,
+                    10.0f,  10.0f,  -10.0f, -10.0f, 10.0f,  -10.0f, -10.0f, -10.0f, 10.0f,  -10.0f, -10.0f, -10.0f,
+                    -10.0f, 10.0f,  -10.0f, -10.0f, 10.0f,  -10.0f, -10.0f, 10.0f,  10.0f,  -10.0f, -10.0f, 10.0f,
+                    10.0f,  -10.0f, -10.0f, 10.0f,  -10.0f, 10.0f,  10.0f,  10.0f,  10.0f,  10.0f,  10.0f,  10.0f,
+                    10.0f,  10.0f,  -10.0f, 10.0f,  -10.0f, -10.0f, -10.0f, -10.0f, 10.0f,  -10.0f, 10.0f,  10.0f,
+                    10.0f,  10.0f,  10.0f,  10.0f,  10.0f,  10.0f,  10.0f,  -10.0f, 10.0f,  -10.0f, -10.0f, 10.0f,
+                    -10.0f, 10.0f,  -10.0f, 10.0f,  10.0f,  -10.0f, 10.0f,  10.0f,  10.0f,  10.0f,  10.0f,  10.0f,
+                    -10.0f, 10.0f,  10.0f,  -10.0f, 10.0f,  -10.0f, -10.0f, -10.0f, -10.0f, -10.0f, -10.0f, 10.0f,
+                    10.0f,  -10.0f, -10.0f, 10.0f,  -10.0f, -10.0f, -10.0f, -10.0f, 10.0f,  10.0f,  -10.0f, 10.0f};
 
   glGenBuffers(1, &sbox_vbo);
   glBindBuffer(GL_ARRAY_BUFFER, sbox_vbo);
@@ -208,8 +201,8 @@ void PC_Renderer::CreateSkybox(const std::string (&imgs)[6]) {
 
   glBindBuffer(GL_ARRAY_BUFFER, NULL);
   glBindVertexArray(NULL);
- // glBindBuffer(GL_ARRAY_BUFFER, 0);
-  //glBindVertexArray(0);
+  // glBindBuffer(GL_ARRAY_BUFFER, 0);
+  // glBindVertexArray(0);
 }
 
 void PC_Renderer::RenderSkybox() {
@@ -224,7 +217,6 @@ void PC_Renderer::RenderSkybox() {
 
   glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(vps_));
 
-
   GLint OldDepthFuncMode;
   glGetIntegerv(GL_DEPTH_FUNC, &OldDepthFuncMode);
 
@@ -234,16 +226,14 @@ void PC_Renderer::RenderSkybox() {
   glDisable(GL_CULL_FACE);
   glDepthFunc(GL_LEQUAL);
 
-
-  //glDepthMask(GL_FALSE);
-  //glDepthFunc(GL_LESS);
+  // glDepthMask(GL_FALSE);
+  // glDepthFunc(GL_LESS);
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_CUBE_MAP, tex_cube);
   glBindBuffer(GL_ARRAY_BUFFER, sbox_vbo);
   glBindVertexArray(sbox_vao);
   glDrawArrays(GL_TRIANGLES, 0, 36);
-
 
   glEnable(GL_CULL_FACE);
   glDepthFunc(OldDepthFuncMode);
@@ -270,8 +260,7 @@ void PC_Renderer::LoadMesh(Mesh *msh) {
     // Bind VBO
     glBindBuffer(GL_ARRAY_BUFFER, (msh->gVBO));
     // put the data in it
-    glBufferData(GL_ARRAY_BUFFER, msh->vertexData.size() * sizeof(vec3), &msh->vertexData[0],
-                 GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, msh->vertexData.size() * sizeof(vec3), &msh->vertexData[0], GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
 
@@ -291,8 +280,7 @@ void PC_Renderer::LoadMesh(Mesh *msh) {
     // Bind VBO
     glBindBuffer(GL_ARRAY_BUFFER, (msh->gCOLOURBO));
     // put the data in it
-    glBufferData(GL_ARRAY_BUFFER, msh->colours.size() * sizeof(unsigned int), &msh->colours[0],
-                 GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, msh->colours.size() * sizeof(unsigned int), &msh->colours[0], GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1,                    // index
@@ -330,8 +318,7 @@ void PC_Renderer::LoadMesh(Mesh *msh) {
   if (msh->hasIndicies) {
     glGenBuffers(1, &(msh->gIBO));
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, msh->gIBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, msh->indices.size() * sizeof(uint32_t), &msh->indices[0],
-                 GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, msh->indices.size() * sizeof(uint32_t), &msh->indices[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL);
     CheckGL();
   }
@@ -372,8 +359,7 @@ void PC_Renderer::ProcessLines() {
   CheckGL();
 
   // put the data in it
-  glBufferData(GL_ARRAY_BUFFER, linebuffer.size() * sizeof(float) * 7, &linebuffer[0],
-               GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, linebuffer.size() * sizeof(float) * 7, &linebuffer[0], GL_STATIC_DRAW);
   CheckGL();
 
   glEnableVertexAttribArray(0);

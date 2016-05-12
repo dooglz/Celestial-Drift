@@ -2,8 +2,8 @@
 #pragma once
 #include "common.h"
 #include "component.h"
-#include <glm\glm.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm\glm.hpp>
 
 namespace Components {
 
@@ -21,7 +21,7 @@ public:
   ~CmShipdriver();
 
   void Update(double delta);
-  
+
   uint32_t lapcount;
   uint32_t waypointIndex;
   uint32_t NextWaypointIndex;

@@ -1,7 +1,7 @@
 #pragma once
 #include "common.h"
-#include <string>
 #include <functional>
+#include <string>
 #include <vector>
 
 // typedef bool (*FnCommandCallback_t)(const std::vector<std::string> &params);

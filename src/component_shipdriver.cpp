@@ -1,5 +1,5 @@
-#include "Entity.h"
 #include "component_shipdriver.h"
+#include "Entity.h"
 #include "component_track.h"
 #include "gamelogic.h"
 #include "renderer.h"
@@ -32,8 +32,8 @@ void CmShipdriver::Update(double delta) {
     return;
   }
 
-  if (Ent_->GetPosition().y < -30.0f){
-    Ent_->SetPosition(Components::CmTrack::waypoints[waypointIndex] + vec3(0,2.0f,0));
+  if (Ent_->GetPosition().y < -30.0f) {
+    Ent_->SetPosition(Components::CmTrack::waypoints[waypointIndex] + vec3(0, 2.0f, 0));
     velocity_ = vec3(0.0f, 0.0f, 0.0f);
     acceleration_ = vec3(0.0f, 0.0f, 0.0f);
     angularVel_ = vec3(0.0f, 0.0f, 0.0f);
@@ -104,13 +104,13 @@ void CmShipdriver::Update(double delta) {
         cd = nd;
         waypointIndex = i;
         NextWaypointIndex = ((waypointIndex + 1) % (Components::CmTrack::waypoints.size()));
-        NextWaypointRnd = Components::CmTrack::waypoints[NextWaypointIndex] +
-                          ((vec3(Frand() - 0.5f, 0, Frand() - 0.5f)) * 15.0f);
+        NextWaypointRnd =
+            Components::CmTrack::waypoints[NextWaypointIndex] + ((vec3(Frand() - 0.5f, 0, Frand() - 0.5f)) * 15.0f);
         //  LOG(logDEBUG1) << waypointIndex << " " << NextWaypointIndex;
       }
     }
   }
-  //Renderer::DrawCross(NextWaypointRnd, 4.0f, vec4(1.0f, 0.5f, 1.0f, 1.0f));
+  // Renderer::DrawCross(NextWaypointRnd, 4.0f, vec4(1.0f, 0.5f, 1.0f, 1.0f));
 
   // Renderer::DrawLine(Ent_->GetPosition(), Components::CmTrack::waypoints[waypointIndex],
   // vec4(1.0f, 0.5f, 1.0f, 1.0f), vec4(1.0f, 0.5f, 1.0f, 1.0f));
