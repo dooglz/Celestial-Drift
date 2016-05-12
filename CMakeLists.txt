@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.2)
-
+message(${CMAKE_GENERATOR})
 project(celestial_drift)
 
 SET(OUTPUT_DIRECTORY "bin/")
@@ -83,7 +83,14 @@ target_include_directories(celestial_drift_main PUBLIC "include")
 link_directories("${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/${config}")
 set(LIB_SEARCH_PATH "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/Release/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/Debug/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/" )
 
-set(LIBS2 "glfw3" "glew32" "freetype" "freetype-gl" "fmod" "FreeImage")
+set(VSVER "")
+if(${CMAKE_GENERATOR} STREQUAL "Visual Studio 12 2013 Win64")
+	set(VSVER "_vs13")
+elseif(${CMAKE_GENERATOR} STREQUAL "Visual Studio 14 2015 Win64")
+	set(VSVER "_vs13")
+endif(${CMAKE_GENERATOR} STREQUAL "Visual Studio 12 2013 Win64")
+
+set(LIBS2 "glfw3${VSVER}" "glew32" "freetype${VSVER}" "freetype-gl${VSVER}" "fmod" "FreeImage")
 
 foreach(loop_var ${LIBS2})
 message (${loop_var})
