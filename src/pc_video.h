@@ -11,7 +11,7 @@ public:
   static unsigned int FB_SIZE_Y;
   //
   static GLFWwindow *GetWindow();
-
+  static void SplitviewPort(const unsigned int total, const unsigned int active);
 protected:
   static GLFWwindow *window_;
   static void Resize(GLFWwindow *window, int width, int height);

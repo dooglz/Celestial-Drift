@@ -11,6 +11,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
 glm::mat4 PC_Renderer::vp_;
+static glm::mat4 ps_;
+static glm::mat4 vps_;
 std::vector<std::pair<const glm::vec3, const glm::vec4>> PC_Renderer::linebuffer;
 
 void CheckGL() {
@@ -29,6 +31,7 @@ bool PC_Renderer::Init() {
   glDepthFunc(GL_LESS);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_TEXTURE_2D);
+  ResetProjectionMatrix();
   return false;
 }
 
@@ -45,15 +48,19 @@ void PC_Renderer::DrawLine(const glm::vec3 &p1, const glm::vec3 &p2, const glm::
   linebuffer.push_back(std::make_pair(p2, col2));
 }
 
-static glm::mat4 vps_;
-void PC_Renderer::SetViewMatrix(const glm::mat4 &vpm) {
-  glm::mat4 Projection =
-      glm::perspective(glm::radians(45.0f), (float)DEFAULT_RESOLUTION_X / (float)DEFAULT_RESOLUTION_Y, 0.1f, 1000.0f);
-  vp_ = Projection * vpm;
 
+void PC_Renderer::SetProjectionMAtrix(const glm::mat4 &vm){
+	ps_ = vm;
+}
+ void PC_Renderer::ResetProjectionMatrix(){
+	 ps_ = glm::perspective(glm::radians(45.0f), (float)DEFAULT_RESOLUTION_X / (float)DEFAULT_RESOLUTION_Y, 0.1f, 1000.0f);
+}
+
+void PC_Renderer::SetViewMatrix(const glm::mat4 &vpm) {
+  glm::mat4 Projection = vp_ = ps_ * vpm;
   vps_ = vpm;
   vps_[3] = glm::vec4(0, 0, 0, 1);
-  vps_ = Projection * vps_;
+  vps_ = ps_ * vps_;
 }
 
 void PC_Renderer::RenderMesh(const Mesh &m, const mat4 &modelMatrix) {

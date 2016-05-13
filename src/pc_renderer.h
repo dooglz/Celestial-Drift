@@ -15,6 +15,8 @@ public:
   static void ClearFrame();
   static void ClearColour(glm::vec4 c);
   static void SetViewMatrix(const glm::mat4 &vm);
+  static void SetProjectionMAtrix(const glm::mat4 &vm);
+  static void ResetProjectionMatrix();
   static void RenderMesh(const Mesh &m, const glm::mat4 &modelMatrix);
   static void BindTexture(const unsigned int texID, const unsigned int texUnit, const std::string &shader);
   static void CreateSkybox(const std::string (&imgs)[6]);
