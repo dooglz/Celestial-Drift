@@ -43,6 +43,7 @@ RaceState GameLogic::racestate;
 
 #define SHIPCOUNT 16
 Entity ships[SHIPCOUNT];
+Entity powerups[4];
 Entity blankEnt;
 
 Entity player;
@@ -85,6 +86,8 @@ bool ToggleFly(const std::vector<std::string> &params) {
 bool GameLogic::Run() {
   debugcmra = false;
   const vec3 start = glm::vec3(-7, 8, -30);
+
+
   for (size_t i = 0; i < SHIPCOUNT; i++) {
     int row = (i + 1) % 2;
     int collumn = (i + 1) / 2;
@@ -115,8 +118,17 @@ bool GameLogic::Run() {
   trackmr.SetMesh("track.obj");
   trackEnt.SetPosition(glm::vec3(0, 0.5f, 0));
   trackEnt.SetScale(glm::vec3(200.0f));
+  trackmr.Moved();
 
   Scene::scene_list.push_back(&trackEnt);
+
+
+  for (size_t i = 0; i < 4; i++)
+  {
+	  BuildPowerup(&powerups[i]);
+	  Scene::scene_list.push_back(&powerups[i]);
+
+  }
 
   // main menu setup
   auto mnu = new Menu();
