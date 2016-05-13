@@ -9,7 +9,7 @@ CmPlayerShipDriver::CmPlayerShipDriver(const unsigned int playerID)
     : playerID_(playerID), CmShipdriver() {
   CommandParser::commands.push_back({"player_" + to_string(playerID) + "_accelerate", "", 1,
                                      [this](const vector<string> &params) {
-										 LOG(logINFO) << playerID_;
+
                                        Accelerate(1.0f);
                                        return true;
                                      }});

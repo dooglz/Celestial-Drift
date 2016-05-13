@@ -8,6 +8,7 @@
 #include "component_player_shipdriver.h"
 #include "component_shipdriver.h"
 #include "component_track.h"
+#include "pc_sound.h"
 #include "entity.h"
 #include "filesystem.h"
 #include "gamelogic.h"
@@ -210,6 +211,9 @@ bool GameLogic::Run() {
   Renderer::CreateSkybox({"resources/img/bk.jpg", "resources/img/ft.jpg", "resources/img/up.jpg",
                           "resources/img/dn.jpg", "resources/img/lf.jpg", "resources/img/rt.jpg"});
 
+
+  PC_Sound::Init();
+
   auto t = gameclock::now();
   double frametimes[256];
   for (auto &t : frametimes) {
@@ -296,6 +300,9 @@ bool GameLogic::Run() {
           vec3 resultNormal;
           float depth;
           if (Collide(ships[i].GetPosition(), 1.0f, ships[j].GetPosition(), 1.0f, point, resultNormal, depth)) {
+			  if(i == 0 || j == 0){
+				  PC_Sound::bump();
+			  }
             //   cout << i << " " << j << tos(point) << tos(resultNormal) << depth << endl;
             std::vector<Component *> cc = ships[i].GetComponents("ShipDriver");
             Resolve(ships[i], *(Components::CmShipdriver *)(cc[0]), resultNormal, depth);

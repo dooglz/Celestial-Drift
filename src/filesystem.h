@@ -8,7 +8,7 @@ namespace fileIO { /*
      "..\\res/fonts/", "..\\res/shaders/ogl/", "/app0/", "/app0/res/", "/app0/res/mdl/",
      "/app0/res/fonts/", "/app0/res/shaders/ps4/"};
  */
-static const std::string filedirs[] = {"", "resources/", "resources/mdl/", "resources/fonts/",
+static const std::string filedirs[] = {"", "resources/", "resources/mdl/", "resources/fonts/","resources/sound/",
                                        "resources/shaders/ogl/"};
 
 struct BinaryFile {
