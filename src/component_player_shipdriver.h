@@ -6,8 +6,9 @@ class CmPlayerShipDriver : public CmShipdriver {
 
 private:
 protected:
+	const unsigned int playerID_;
 public:
-  CmPlayerShipDriver();
+  CmPlayerShipDriver(const unsigned int playerID);
   ~CmPlayerShipDriver();
 };
 }

@@ -9,7 +9,7 @@ void BuildShipPlayer(Entity *ent) {
   ent->SetName("player ship");
   // TODO: cleanup delete these
   Components::CmMeshRenderer *mr = new Components::CmMeshRenderer();
-  Components::CmPlayerShipDriver *dr = new Components::CmPlayerShipDriver();
+  Components::CmPlayerShipDriver *dr = new Components::CmPlayerShipDriver(0);
   ent->AddComponent(*mr);
   ent->AddComponent(*dr);
   mr->SetMesh("ship1.obj");

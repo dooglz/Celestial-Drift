@@ -33,7 +33,7 @@ bool helpselect;
 bool controlselect;
 bool inMenu;
 bool debugcmra;
-string controls = "";
+bool multiplayer;
 
 const string versionText =
     "WIP BUILD:" + string(GIT_HASH) + " - " + string(string(GIT_DATE), 0, string(GIT_DATE).length() - 6);
@@ -55,60 +55,28 @@ bool GameLogic::Init() {
   GroundPlane::Init();
   RUNGAME = true;
   inMenu = true;
+  multiplayer = false;
   return false;
 }
 
-bool ToggleFly(const std::vector<std::string> &params) {
-  debugcmra = !debugcmra;
-  return true;
-}
-bool Menu_up(const std::vector<std::string> &params) {
-  LOG(logDEBUG2) << "Menu Up";
-  Menu::activeMenu->Move(MENU_UP);
-  return true;
-}
-bool Menu_down(const std::vector<std::string> &params) {
-  LOG(logDEBUG2) << "Menu Down";
-  Menu::activeMenu->Move(MENU_DOWN);
-  return true;
-}
-bool Menu_enter(const std::vector<std::string> &params) {
-  LOG(logDEBUG2) << "Menu Enter";
-  Menu::activeMenu->Move(MENU_RIGHT);
-  return true;
-}
-
-bool Start_Game(const std::vector<std::string> &params) {
-  LOG(logDEBUG2) << "starting game";
-  inMenu = false;
-  return true;
-}
-bool Quit_game(const std::vector<std::string> &params) {
-  RUNGAME = false;
-  return true;
-}
-bool Menu_Help(const std::vector<std::string> &params) {
-  helpselect = true;
-  return true;
-}
-bool Back_To_Menu(const std::vector<std::string> &params) {
-  LOG(logDEBUG2) << "main menu";
-  helpselect = false;
-  return true;
-}
-
-bool Controls(const std::vector<std::string> &params) {
-  for (auto &it : actual_Input_builtins) {
-    for (auto &b : it.bindings) {
-      controls += std::string(b) + ", " + std::string(it.name) + '\n';
-    }
-  }
-
-  if (controlselect != true) {
-    controlselect = true;
+void setupPlayers() {
+  if (multiplayer) {
+    auto &p2 = ships[1];
+    p2.RemoveComponent(*p2.getComponent<Components::CmNPCShipDriver>());
+    Components::CmPlayerShipDriver *dr2 = new Components::CmPlayerShipDriver(1);
+    p2.AddComponent(*dr2);
   } else {
-    controlselect = false;
+    auto &p2 = ships[1];
+    p2.RemoveComponent(*p2.getComponent<Components::CmPlayerShipDriver>());
+    Components::CmNPCShipDriver *dr2 = new Components::CmNPCShipDriver();
+    p2.AddComponent(*dr2);
   }
+}
+
+bool ToggleFly(const std::vector<std::string> &params) {
+  multiplayer = !multiplayer;
+  setupPlayers();
+  // debugcmra = !debugcmra;
   return true;
 }
 
@@ -152,37 +120,63 @@ bool GameLogic::Run() {
   auto mnu = new Menu();
   mnu->SetPosition({400, 400});
   auto mnuitm1 = new MenuItem("Celestial Drift", false, nullptr);
+
   mnu->GetItems()->push_back(mnuitm1);
-  auto mnuitm2 = new MenuItem("Start", true, Start_Game);
+  auto mnuitm2 = new MenuItem("Start", true, [](const vector<string> &params) {
+    inMenu = false;
+    return true;
+  });
   mnu->GetItems()->push_back(mnuitm2);
-  auto mnuitm3 = new MenuItem("Help", true, Menu_Help);
+
+  auto mnuitm3 = new MenuItem("Help", true, [](const vector<string> &params) {
+    helpselect = true;
+    return true;
+  });
   mnu->GetItems()->push_back(mnuitm3);
-  auto mnuitm4 = new MenuItem("Quit", true, Quit_game);
+
+  auto mnuitm4 = new MenuItem("Quit", true, [](const vector<string> &params) {
+    RUNGAME = false;
+    return true;
+  });
   mnu->GetItems()->push_back(mnuitm4);
 
   auto helpmnu = new Menu();
   helpmnu->SetPosition({100, 100});
   auto helpmnuitm1 = new MenuItem("Celestial Drift Help Menu", false, nullptr);
   helpmnu->GetItems()->push_back(helpmnuitm1);
-  auto helpmnuitm2 = new MenuItem("Start", true, Start_Game);
-  helpmnu->GetItems()->push_back(helpmnuitm2);
-  auto helpmnuitm3 = new MenuItem("Back To Menu", true, Back_To_Menu);
+  auto helpmnuitm3 = new MenuItem("Back To Menu", true, [](const vector<string> &params) {
+    helpselect = false;
+    controlselect = false;
+    return true;
+  });
   helpmnu->GetItems()->push_back(helpmnuitm3);
-  auto helpmnuitm4 = new MenuItem("Quit", true, Quit_game);
-  helpmnu->GetItems()->push_back(helpmnuitm4);
-  auto helpmnuitm5 = new MenuItem("Controls", true, Controls);
+  auto helpmnuitm5 = new MenuItem("Controls", true, [](const vector<string> &params) {
+    controlselect = !controlselect;
+    return true;
+  });
   helpmnu->GetItems()->push_back(helpmnuitm5);
 
   // input
+
   CommandParser::commands.push_back({"toggle_fly", "", 0, ToggleFly});
-  CommandParser::commands.push_back({"menu_up", "", 0, Menu_up});
-  CommandParser::commands.push_back({"menu_down", "", 0, Menu_down});
-  CommandParser::commands.push_back({"menu_enter", "", 0, Menu_enter});
-  CommandParser::commands.push_back({"quit", "", 0, Quit_game});
-  CommandParser::commands.push_back({"Controls", "", 0, Controls});
-  CommandParser::commands.push_back({"Back_To_Menu", "", 0, Back_To_Menu});
-  CommandParser::commands.push_back({"Start_Game", "", 0, Start_Game});
-  CommandParser::commands.push_back({"Menu_Help", "", 0, Menu_Help});
+
+  CommandParser::commands.push_back({"menu_up", "", 0, [](const vector<string> &params) {
+                                       Menu::activeMenu->Move(MENU_UP);
+                                       return true;
+                                     }});
+  CommandParser::commands.push_back({"menu_down", "", 0, [](const vector<string> &params) {
+                                       Menu::activeMenu->Move(MENU_DOWN);
+                                       return true;
+                                     }});
+  CommandParser::commands.push_back({"menu_enter", "", 0, [](const vector<string> &params) {
+                                       Menu::activeMenu->Move(MENU_RIGHT);
+                                       return true;
+                                     }});
+
+  CommandParser::commands.push_back({"quit", "", 0, [](const vector<string> &params) {
+                                       RUNGAME = false;
+                                       return true;
+                                     }});
 
   // key bindings, route through the parser for now
   CommandParser::Cmd_Bind({"", "menu_up", "UP", ""});
@@ -190,22 +184,6 @@ bool GameLogic::Run() {
   CommandParser::Cmd_Bind({"", "menu_enter", "ENTER", ""});
   CommandParser::Cmd_Bind({"", "quit", "ESC", ""});
   CommandParser::Cmd_Bind({"", "toggle_fly", "V", ""});
-
-  Mesh texm = Mesh();
-  texm.hasUvs = true;
-  texm.hasNormals = false;
-  texm.loadedLocal = false;
-  texm.loadedMain = true;
-  texm.hasColours = false;
-  texm.hasIndicies = true;
-  texm.numVerts = 4;
-  texm.vertexData = {{-1.0f, 1.0f, 0.0f}, {-1.0f, -1.0f, 0.0f}, {1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}};
-  texm.uvs = {{0.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}};
-  texm.indices = {0, 2, 1, 0, 3, 2};
-  texm.shaderPref = "texture";
-  Renderer::LoadMesh(&texm);
-  std::string aa = fileIO::SearchDirsPath("img/bk.jpg");
-  TextureManager::Inst()->LoadTexture(aa.c_str(), 0);
 
   Renderer::CreateSkybox({"resources/img/bk.jpg", "resources/img/ft.jpg", "resources/img/up.jpg",
                           "resources/img/dn.jpg", "resources/img/lf.jpg", "resources/img/rt.jpg"});
@@ -262,61 +240,68 @@ bool GameLogic::Run() {
     } else {
       gamestate = GAME;
       racestate = RUNNING;
-    }
 
-    for (size_t i = 0; i < Components::CmTrack::trackMesh->indices.size(); i += 3) {
-      vec3 p[3];
-      p[0] = Components::CmTrack::transformedPositions[Components::CmTrack::trackMesh->indices[i]];
-      p[1] = Components::CmTrack::transformedPositions[Components::CmTrack::trackMesh->indices[i + 1]];
-      p[2] = Components::CmTrack::transformedPositions[Components::CmTrack::trackMesh->indices[i + 2]];
-      vec3 point;
-      vec3 resultNormal;
-
-      float depth;
-
-      for (size_t i = 0; i < SHIPCOUNT; i++) {
-        // ship track collision
-        if (Collide(ships[i].GetPosition(), 1.0f, p, point, resultNormal, depth)) {
-          std::vector<Component *> cc = ships[i].GetComponents("ShipDriver");
-          Resolve(ships[i], *(Components::CmShipdriver *)(cc[0]), resultNormal, depth);
-        }
-      }
-    }
-    for (size_t i = 0; i < SHIPCOUNT; i++) {
-      for (size_t j = 0; j < SHIPCOUNT; j++) {
-        if (j == i) {
-          continue;
-        }
-        // ship ship collision
+      for (size_t i = 0; i < Components::CmTrack::trackMesh->indices.size(); i += 3) {
+        vec3 p[3];
+        p[0] = Components::CmTrack::transformedPositions[Components::CmTrack::trackMesh->indices[i]];
+        p[1] = Components::CmTrack::transformedPositions[Components::CmTrack::trackMesh->indices[i + 1]];
+        p[2] = Components::CmTrack::transformedPositions[Components::CmTrack::trackMesh->indices[i + 2]];
         vec3 point;
         vec3 resultNormal;
+
         float depth;
-        if (Collide(ships[i].GetPosition(), 1.0f, ships[j].GetPosition(), 1.0f, point, resultNormal, depth)) {
-          //   cout << i << " " << j << tos(point) << tos(resultNormal) << depth << endl;
-          std::vector<Component *> cc = ships[i].GetComponents("ShipDriver");
-          Resolve(ships[i], *(Components::CmShipdriver *)(cc[0]), resultNormal, depth);
+
+        for (size_t i = 0; i < SHIPCOUNT; i++) {
+          // ship track collision
+          if (Collide(ships[i].GetPosition(), 1.0f, p, point, resultNormal, depth)) {
+            std::vector<Component *> cc = ships[i].GetComponents("ShipDriver");
+            Resolve(ships[i], *(Components::CmShipdriver *)(cc[0]), resultNormal, depth);
+          }
         }
       }
-    }
+      for (size_t i = 0; i < SHIPCOUNT; i++) {
+        for (size_t j = 0; j < SHIPCOUNT; j++) {
+          if (j == i) {
+            continue;
+          }
+          // ship ship collision
+          vec3 point;
+          vec3 resultNormal;
+          float depth;
+          if (Collide(ships[i].GetPosition(), 1.0f, ships[j].GetPosition(), 1.0f, point, resultNormal, depth)) {
+            //   cout << i << " " << j << tos(point) << tos(resultNormal) << depth << endl;
+            std::vector<Component *> cc = ships[i].GetComponents("ShipDriver");
+            Resolve(ships[i], *(Components::CmShipdriver *)(cc[0]), resultNormal, depth);
+          }
+        }
+      }
 
-    const uint32_t plapcount = ((Components::CmShipdriver *)(ships[0].GetComponents("ShipDriver")[0]))->lapcount;
-    const uint32_t pwaypointIndex =
-        ((Components::CmShipdriver *)(ships[0].GetComponents("ShipDriver")[0]))->waypointIndex;
-    uint32_t position = 1;
+      const uint32_t plapcount = ((Components::CmShipdriver *)(ships[0].GetComponents("ShipDriver")[0]))->lapcount;
+      const uint32_t pwaypointIndex =
+          ((Components::CmShipdriver *)(ships[0].GetComponents("ShipDriver")[0]))->waypointIndex;
+      uint32_t position = 1;
 
-    for (size_t i = 1; i < SHIPCOUNT; i++) {
-      const uint32_t lapcount = ((Components::CmShipdriver *)(ships[i].GetComponents("ShipDriver")[0]))->lapcount;
-      if (lapcount > plapcount) {
-        ++position;
-      } else if (lapcount == plapcount) {
-        const uint32_t waypointIndex =
-            ((Components::CmShipdriver *)(ships[i].GetComponents("ShipDriver")[0]))->waypointIndex;
-        if (waypointIndex > pwaypointIndex) {
+      for (size_t i = 1; i < SHIPCOUNT; i++) {
+        const uint32_t lapcount = ((Components::CmShipdriver *)(ships[i].GetComponents("ShipDriver")[0]))->lapcount;
+        if (lapcount > plapcount) {
           ++position;
+        } else if (lapcount == plapcount) {
+          const uint32_t waypointIndex =
+              ((Components::CmShipdriver *)(ships[i].GetComponents("ShipDriver")[0]))->waypointIndex;
+          if (waypointIndex > pwaypointIndex) {
+            ++position;
+          }
         }
       }
+      Font::Draw(25, versionText.c_str(), {300, 30}, {1.0f, 1.0f, 0, 1.0f});
+      Font::Draw(25, avg.c_str(), {100, 30}, {0.2f, 0, 0, 1.0f});
+      stringstream strs;
+      strs << "Position: " << position;
+      Font::Draw(25, strs.str().c_str(), {100, 100}, {0.2f, 0, 0, 1.0f});
+      strs.str("");
+      strs << "Lap: " << plapcount;
+      Font::Draw(25, strs.str().c_str(), {100, 150}, {0.2f, 0, 0, 1.0f});
     }
-
     Scene::Update(delta);
 
     GroundPlane::Update();
@@ -324,11 +309,6 @@ bool GameLogic::Run() {
 
     Scene::Render(delta);
     // GroundPlane::Render(player.GetPosition().x, player.GetPosition().z);
-
-    // glActiveTexture(GL_TEXTURE0);
-    // TextureManager::Inst()->BindTexture(0);
-    Renderer::BindTexture(0, 0, "texture");
-    Renderer::RenderMesh(texm, mat4());
 
     // rendering choice
     if (inMenu) {
@@ -339,28 +319,14 @@ bool GameLogic::Run() {
       }
     }
 
-    Font::Draw(25, versionText.c_str(), {300, 30}, {1.0f, 1.0f, 0, 1.0f});
-    Font::Draw(25, avg.c_str(), {100, 30}, {0.2f, 0, 0, 1.0f});
-    stringstream strs;
-    strs << "Position: " << position;
-    Font::Draw(25, strs.str().c_str(), {100, 100}, {0.2f, 0, 0, 1.0f});
-    strs.str("");
-    strs << "Lap: " << plapcount;
-    Font::Draw(25, strs.str().c_str(), {100, 150}, {0.2f, 0, 0, 1.0f});
-
-    // renders in the same place as help text so stop that
-    if (helpselect == false) {
-      /*  stringstream speedstream;
-
-      speedstream << fixed << std::setprecision(2) << playerspeedReal << " m/s\n("
-                  << player.GetPosition().x << "," << player.GetPosition().z << ")";
-      Font::Draw(25, speedstream.str().c_str(), {100, 200}, {0.2f, 0, 0, 1.0f});
-      */
-    }
-    if (controlselect == true && helpselect == true) {
+    if (controlselect == true) {
+      string controls;
+      for (auto &it : actual_Input_builtins) {
+        for (auto &b : it.bindings) {
+          controls += std::string(b) + ", " + std::string(it.name) + '\n';
+        }
+      }
       Font::Draw(25, controls.c_str(), {400, 400}, {0.2f, 1.0f, 0, 1.0f});
-    } else {
-      controls = "";
     }
 
     PC_Renderer::RenderSkybox();

@@ -20,6 +20,9 @@ std::vector<actual_Input> actual_Input_builtins = {
     {"1", GLFW_KEY_1, {}},         {"2", GLFW_KEY_2, {}},         {"3", GLFW_KEY_3, {}},
     {"4", GLFW_KEY_4, {}},         {"5", GLFW_KEY_5, {}},         {"6", GLFW_KEY_6, {}},
     {"7", GLFW_KEY_7, {}},         {"8", GLFW_KEY_8, {}},         {"9", GLFW_KEY_9, {}},
+    {"NP1", GLFW_KEY_KP_1, {}},    {"NP2", GLFW_KEY_KP_2, {}},    {"NP3", GLFW_KEY_KP_3, {}},
+    {"NP4", GLFW_KEY_KP_4, {}},    {"NP5", GLFW_KEY_KP_5, {}},    {"NP6", GLFW_KEY_KP_6, {}},
+    {"NP7", GLFW_KEY_KP_7, {}},    {"NP8", GLFW_KEY_KP_8, {}},    {"NP9", GLFW_KEY_KP_9, {}},
     {"-", GLFW_KEY_MINUS, {}},     {"=", GLFW_KEY_EQUAL, {}},     {"ESC", GLFW_KEY_ESCAPE, {}},
     {"ENTER", GLFW_KEY_ENTER, {}}, {"SPACE", GLFW_KEY_SPACE, {}}, {"UP", GLFW_KEY_UP, {}},
     {"DOWN", GLFW_KEY_DOWN, {}},   {"LEFT", GLFW_KEY_LEFT, {}},   {"RIGHT", GLFW_KEY_RIGHT, {}}};
