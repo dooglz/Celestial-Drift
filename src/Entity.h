@@ -53,7 +53,8 @@ public:
     for (std::vector<Component *>::iterator it = components_.begin(); it != components_.end(); ++it) {
       // printf("Checking %s against %s \n", typeid(**it).name(),
       // typeid(T).name());
-      if (&typeid(**it) == &typeid(T)) {
+      const auto _type = *it;
+      if (&typeid(*_type) == &typeid(T)) {
         return static_cast<T *>(*it);
       }
     }

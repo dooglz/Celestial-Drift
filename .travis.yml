@@ -19,15 +19,33 @@ matrix:
 before_script:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
       sudo apt-get -qq update;
-      sudo apt-get install -y  libx11-xcb-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev;
+      sudo apt-get install -y  libgl1-mesa-dev libx11-xcb-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev;
+      CMAKE_URL="https://github.com/Kitware/CMake/releases/download/v3.16.3/cmake-3.16.3-Linux-x86_64.tar.gz";
+      echo "pulling down cmake" ${CMAKE_URL};
+      mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake;
+      export PATH=${TRAVIS_BUILD_DIR}/cmake/bin:${PATH};
+      echo ${TRAVIS_BUILD_DIR}/cmake/bin;
+      ls ${TRAVIS_BUILD_DIR}/cmake/bin;
+      export CMAKE=$TRAVIS_BUILD_DIR/cmake/bin/cmake;
    fi
 script:
   - mkdir -p build && cd build
   - if [ "$TRAVIS_OS_NAME" == "windows" ]; then 
       cmake -A x64 .. ;
-      cmake --build . --target celestial_drift_BUILD_AUDIO --config Release; 
+      cmake --build . --target package --config Release; 
    fi
   - if [ "$TRAVIS_OS_NAME" != "windows" ]; then 
      cmake .. ; 
-     cmake --build . --target celestial_drift_BUILD_AUDIO --config Release -- -j4; 
+     cmake --build . --target package --config Release -- -j4; 
    fi
+  - for i in ${TRAVIS_BUILD_DIR}/build/installer/*.zip; do mv "$i" "${i%.*}_${COMPILER_NAME}_${TRAVIS_OS_NAME}.zip"; done
+deploy:
+  provider: releases
+  draft: true
+  api_key:
+     secure: A+7S9Y4T/qyXn9ETgci8UlTAGaek1qlz16NtnE4KLJSBcKCcZHxqOo3+bopVS1C4wo1HFyYgBMTmE5/GtPMtkO0XHYfOYYvx5+emcIV9nIXYmKIHidkfbQA8w8nsMmnPohrjUhoOEOLoBViCewULSq6LVgNq7KoFXhPJJMvulp/OReWKwQrKiEmY2HnoBVvboDiizcj/zo2SVvFKIWYCzPcFe9cxlRnVB5stgd6cEw6NHXY4I9ZGOF38dY4nHFxMtON6pPVZ9CviWd5GXcmnhVMyAXypT+VQHX/gECGkSNCFtNrxr90HPQ3Asq5Ugs0EjYZk0ckSjj1n1s3FnYyT8jij1xjTKJvmByOEXqDUbjpVFNEZr/FQNxuSIlbvvdYGHSYVYeoym4xRxF3XJI21/EF62FpuSHn2f44Gis5flq0Y7D371Cf3U3SANwuwQ+QTasm8iZaZfCeZXJB0+2yFHsfD2ZarflMk42ApVRbosn28oq1WSNNr5k+x/6XjUNtW/I6qwlrq0zZk8mSwUvr1KJFI3YxdNFq8zZMe+qU0gpLV3R7y6n5VcGZCpDe/2FA7Q8U6voisygRLjGlxj2HanxZdGt3WWeslxjj0Ej+xbvz6mMUxcmFXjS5eOfVsjwxbSaK0EH9EkvaGBkg3nEbu/Qn83yiap3oxHLWlHESLFHI=
+  file_glob: true
+  file: "${TRAVIS_BUILD_DIR}/build/installer/*.zip"
+  skip_cleanup: true
+  on:
+    tags: true

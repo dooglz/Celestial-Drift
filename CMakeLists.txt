@@ -1,23 +1,13 @@
 cmake_minimum_required (VERSION 3.12)
 project (celestial_drift VERSION 1.0 LANGUAGES CXX)
+cmake_policy(SET CMP0079 NEW)
 
+find_package(OpenGL REQUIRED)
+message(STATUS "openGL @ ${OPENGL_gl_LIBRARY}, ${OPENGL_INCLUDE_DIR}")
 
-
-
-###############################################################################
-## file globbing ##############################################################
-###############################################################################
 
 file(GLOB_RECURSE sources src/*.cpp src/*.h src/*.cl src/*.cu src/*.vert src/*.frag src/*.geom src/*.tess)
 file(GLOB_RECURSE shaders resources/shaders/ogl/*.vert resources/shaders/ogl/*.frag resources/shaders/ogl/*.geom resources/shaders/ogl/*.tess)
-
-#message(STATUS "file list: ${sources}")
-
-###############################################################################
-## target definitions #########################################################
-###############################################################################
-
-
 
 add_executable(celestial_drift_main ${sources} ${shaders})
 target_compile_features(celestial_drift_main PUBLIC cxx_std_17)
@@ -34,11 +24,7 @@ set_target_properties(celestial_drift_main PROPERTIES
 
 SOURCE_GROUP("Shaders" FILES ${shaders})
 
-#add_custom_command(TARGET celestial_drift_main POST_BUILD
-#    COMMAND ${CMAKE_COMMAND} -E copy_directory
-#        ${REDISTS}
-#        $<TARGET_FILE_DIR:celestial_drift_main>
-#)
+
 
 if(APPLE)
   add_custom_target(copy_resources ALL
@@ -60,16 +46,33 @@ if(MSVC)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 endif(MSVC)
 
+add_subdirectory(deps/glm EXCLUDE_FROM_ALL)
+
+add_subdirectory(deps/glew/ EXCLUDE_FROM_ALL)
+target_include_directories(libglew_static PRIVATE ${OPENGL_INCLUDE_DIR})
+target_compile_definitions(libglew_static INTERFACE GLEW_NO_GLU)
+target_compile_definitions(libglew_static INTERFACE GLEW_STATIC)
 
 add_subdirectory(deps/glfw EXCLUDE_FROM_ALL)
+
 add_subdirectory(deps/freetype EXCLUDE_FROM_ALL)
+
 set(freetype-gl_BUILD_DEMOS OFF CACHE BOOL "" FORCE)
 set(freetype-gl_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(freetype-gl_BUILD_APIDOC OFF CACHE BOOL ""  FORCE)
+
+#freetype-gl needs some serious cmake work, the following is a workaround.
+set(GLEW_LIBRARY libglew_static)
+get_target_property(GLEW_INCLUDE_PATH libglew_static INCLUDE_DIRECTORIES)
+set(FREETYPE_LIBRARY freetype)
+get_target_property(FREETYPE_INCLUDE_DIRS freetype INCLUDE_DIRECTORIES)
 add_subdirectory(deps/freetype-gl EXCLUDE_FROM_ALL)
 target_include_directories(freetype-gl INTERFACE deps/freetype-gl)
-add_subdirectory(deps/glm EXCLUDE_FROM_ALL)
-add_subdirectory(deps/glew/ EXCLUDE_FROM_ALL)
+target_compile_definitions(freetype-gl PUBLIC GLEW_NO_GLU)
+target_compile_definitions(freetype-gl PUBLIC GLEW_STATIC)
+add_dependencies(freetype-gl freetype OpenGL::GL libglew_static)
+target_link_libraries(freetype-gl freetype libglew_static)
+
 add_library(stb INTERFACE)
 target_include_directories(stb INTERFACE  ${CMAKE_CURRENT_SOURCE_DIR}/deps/stb)
 
@@ -82,8 +85,7 @@ function(target_link_libraries_system target)
     target_link_libraries(${target} ${lib})
   endforeach(lib)
 endfunction(target_link_libraries_system)
-target_link_libraries_system (celestial_drift_main glfw glm::glm libglew_static stb freetype freetype-gl)
-#target_link_libraries(celestial_drift_main freetype-gl SYSTEM ${lib})
+target_link_libraries_system (celestial_drift_main OpenGL::GL glfw glm::glm libglew_static stb freetype freetype-gl)
 
 
 option(celestial_drift_BUILD_AUDIO "Build audio" OFF)
@@ -91,31 +93,9 @@ if(celestial_drift_BUILD_AUDIO)
 #todo fmod
 endif()
 
-# this lets me include files relative to the root src dir with a <> pair
-#target_include_directories(celestial_drift_main PUBLIC "include")
 
-#link_directories("${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/${config}")
-#set(LIB_SEARCH_PATH "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/Release/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/Debug/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/" )
 
-#set(LIBS2 "glfw3${VSVER}" "glew32" "freetype${VSVER}" "freetype-gl${VSVER}" "fmod" "FreeImage")
-
-#foreach(loop_var ${LIBS2})
-#message (${loop_var})
-# set(FOUND_LIB "FOUND_LIB-NOTFOUND")
-# find_library (FOUND_LIB 
-#   ${loop_var}
-#  PATHS 
-#	${LIB_SEARCH_PATH}
-#  NO_DEFAULT_PATH)
-# message(${FOUND_LIB})
-# TARGET_LINK_LIBRARIES(celestial_drift_main ${FOUND_LIB})
-#endforeach(loop_var)
- 
-target_compile_definitions(celestial_drift_main PRIVATE GLEW_STATIC)
-
-#TARGET_LINK_LIBRARIES(celestial_drift_main "opengl32") 
-
- exec_program(
+exec_program(
      "git"
      ${CMAKE_SOURCE_DIR}
      ARGS " log -n 1 --format=format:\"%h\""
@@ -129,6 +109,36 @@ target_compile_definitions(celestial_drift_main PRIVATE GLEW_STATIC)
      OUTPUT_VARIABLE GITDATE
  )
  
- target_compile_definitions(celestial_drift_main PUBLIC  GIT_HASH="${GITHASH}")
- target_compile_definitions(celestial_drift_main PUBLIC  GIT_DATE="${GITDATE}")
+target_compile_definitions(celestial_drift_main PUBLIC  GIT_HASH="${GITHASH}")
+target_compile_definitions(celestial_drift_main PUBLIC  GIT_DATE="${GITDATE}")
 target_compile_definitions(celestial_drift_main PUBLIC _PLATFORM_X64)
+
+
+
+#Install directory within build folder, so it doesn't go into /lib or program-files
+set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install/")
+#Installer.exe/zip built into /installer
+SET(CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}/installer/")
+INCLUDE(InstallRequiredSystemLibraries)
+install(TARGETS celestial_drift_main DESTINATION "bin" CONFIGURATIONS Release COMPONENT celestial_drift_CMPT)
+#Install component for resources
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/resources" DESTINATION "bin/" CONFIGURATIONS Release COMPONENT RESOURCES_CMPT)
+
+#Tell CPack about the libs and resources install components
+set(CPACK_COMPONENTS_ALL ${CPACK_COMPONENTS_ALL} RESOURCES_CMPT celestial_drift_CMPT)
+
+set(CPACK_GENERATOR ZIP)
+set(CPACK_PACKAGE_FILE_NAME ${CMAKE_PROJECT_NAME})
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "celestial_drift_main")
+set(CPACK_PACKAGE_VENDOR "Dooglz")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
+
+set(CPACK_PACKAGE_VERSION_MAJOR "0")
+set(CPACK_PACKAGE_VERSION_MINOR "1")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
+
+INCLUDE(CPack)
+
+
+
+

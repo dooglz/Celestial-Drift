@@ -38,4 +38,4 @@ void shutdown() {
   Soundsystem->close();
   Soundsystem->release();
 }
-#endif SOUND
+#endif

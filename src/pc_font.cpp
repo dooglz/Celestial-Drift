@@ -127,7 +127,7 @@ void PC_Font::Draw(const uint16_t &fontsizes, const char *text, const glm::vec2 
 texture_atlas_t *atlas;
 bool PC_Font::Init() {
   atlas = texture_atlas_new(2048, 2048, 1);
-  char *text = "A Quick Brown Fox Jumps Over The Lazy Dog 0123456789+=_-";
+//  char *text = "A Quick Brown Fox Jumps Over The Lazy Dog 0123456789+=_-";
   std::string aa = fileIO::SearchDirsPath("consolas.ttf");
   const char *filename = aa.c_str();
   vec2 pen = {{5, 400}};

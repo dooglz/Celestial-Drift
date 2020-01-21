@@ -1,6 +1,6 @@
 #include "pc_video.h"
 #include "GL/glew.h"
-#include "PC_Renderer.h"
+#include "pc_renderer.h"
 #include "common.h"
 #include <GLFW/glfw3.h>
 

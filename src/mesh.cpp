@@ -5,7 +5,7 @@
 //#include "pc_shaderprogram.h"
 #include "tiny_obj_loader.h"
 #include <string>
-
+#include <cstring>
 using namespace std;
 
 Mesh *ParseOBJFile(fileIO::Textfile *tf);

@@ -4,7 +4,7 @@
 #include <fstream>
 #include <stdio.h>
 #include <vector>
-
+#include <cstring> 
 using namespace std;
 
 namespace fileIO {

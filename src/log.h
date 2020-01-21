@@ -38,7 +38,10 @@ private:
 };
 
 #define LOG(level)                                                                                                     \
-  \
-if(level > FILELOG_MAX_LEVEL);                                                                                         \
-  else if (level > Logger::ReportingLevel());                                                                          \
-  else Logger().Get(level)
+                                                                                                                       \
+  if (level > FILELOG_MAX_LEVEL)                                                                                       \
+    ;                                                                                                                  \
+  else if (level > Logger::ReportingLevel())                                                                           \
+    ;                                                                                                                  \
+  else                                                                                                                 \
+    Logger().Get(level)

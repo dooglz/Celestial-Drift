@@ -1,5 +1,5 @@
 #include "component_powerup.h"
-#include "entity.h"
+#include "Entity.h"
 
 namespace Components {
 CmPowerUp::CmPowerUp() : wobble_(0.0f), startPos(vec3()), Component("Powerup") {}

@@ -4,6 +4,7 @@
 #include <cassert>
 #include <string>
 #include <thread>
+#include <cstring> 
 
 std::vector<ConVar *> ConVar::cvarList;
 

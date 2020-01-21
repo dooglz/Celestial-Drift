@@ -1,6 +1,6 @@
 #include "scene.h"
 #include "component_camera.h"
-#include "entity.h"
+#include "Entity.h"
 #include "renderer.h"
 #include <string>
 std::vector<Entity *> Scene::scene_list;
