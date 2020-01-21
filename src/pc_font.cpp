@@ -1,9 +1,9 @@
 #include "pc_font.h"
 #include "common.h"
 #include "filesystem.h"
-#include <freetype-gl.h>
 #include "pc_shaderprogram.h"
 #include "resource.h"
+#include <freetype-gl.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/transform.hpp>
 #include <sstream>
@@ -136,10 +136,20 @@ bool PC_Font::Init() {
     static size_t i = 0;
     fonts[i] = texture_font_new_from_file(atlas, s, filename);
     texture_font_load_glyphs(fonts[i], alphanum);
-    //TODO
-    //texture_atlas_upload(fonts[i]->atlas);
+    // TODO
+    // texture_atlas_upload(fonts[i]->atlas);
     ++i;
   }
+  {
+    glGenTextures(1, &atlas->id);
+    glBindTexture(GL_TEXTURE_2D, atlas->id);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, atlas->width, atlas->height, 0, GL_RED, GL_UNSIGNED_BYTE, atlas->data);
+  }
+
 
   texture_font_t *font = fonts[1];
 
