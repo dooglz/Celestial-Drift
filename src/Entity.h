@@ -1,5 +1,5 @@
 #pragma once
-#include "Component.h"
+#include "component.h"
 #include "common.h"
 #include "maths.h"
 #include <glm/gtc/quaternion.hpp>

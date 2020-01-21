@@ -1,7 +1,7 @@
 #include "Physics.h"
 #include "component_shipdriver.h"
-#include "entity.h"
-#include <glm\gtx\norm.hpp>
+#include "Entity.h"
+#include <glm/gtx/norm.hpp>
 
 using namespace glm;
 #define SIMD_EPSILON 1.1920928955078125E-7f
@@ -170,8 +170,7 @@ bool Collide(const vec3 &sphereCenter, const float radius, const vec3 *vertices,
 
 bool Collide(const vec3 &sphereCenter, const float radius, const vec3 *vertices, vec3 &point, vec3 &resultNormal,
              float &depth) {
-  const mat4 a;
-  return Collide(sphereCenter, radius, vertices, a, point, resultNormal, depth, true);
+  return Collide(sphereCenter, radius, vertices, mat4(0.0f), point, resultNormal, depth, true);
 }
 
 void Resolve(Entity &ent, Components::CmShipdriver &sd, vec3 &resultNormal, float &depth) {

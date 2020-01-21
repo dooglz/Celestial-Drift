@@ -52,6 +52,9 @@ else()
   )
 endif()
 
+add_dependencies(celestial_drift_main copy_resources)
+
+
 if(MSVC)
 #MultiThreaded build for that speedy compilation
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
@@ -128,4 +131,4 @@ target_compile_definitions(celestial_drift_main PRIVATE GLEW_STATIC)
  
  target_compile_definitions(celestial_drift_main PUBLIC  GIT_HASH="${GITHASH}")
  target_compile_definitions(celestial_drift_main PUBLIC  GIT_DATE="${GITDATE}")
-
+target_compile_definitions(celestial_drift_main PUBLIC _PLATFORM_X64)

@@ -1,5 +1,5 @@
 #include "component_mesh_renderer.h"
-#include "entity.h"
+#include "Entity.h"
 #include "renderer.h"
 #include "resource.h"
 Components::CmMeshRenderer::CmMeshRenderer() : Component("MeshRenderer") {}

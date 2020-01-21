@@ -1,5 +1,5 @@
 #include "component_track.h"
-#include "entity.h"
+#include "Entity.h"
 #include "renderer.h"
 #include "resource.h"
 

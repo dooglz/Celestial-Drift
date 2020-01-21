@@ -3,6 +3,9 @@
 #include "log.h"
 #include "platform.h"
 #include <stdint.h>
+#include <iomanip>      // std::setprecision
+#include <iostream>     // std::cout, std::fixed
+
 
 #ifndef GIT_HASH
 #define GIT_HASH "00"
@@ -67,6 +70,6 @@ InputIt find_if(InputIt first, InputIt last, UnaryPredicate p)
 }*/
 template <typename T> std::string toStrDecPt(const uint16_t &dp, const T &i) {
   std::stringstream stream;
-  stream << fixed << setprecision(dp) << i;
+  stream << std::fixed << std::setprecision(dp) << i;
   return stream.str();
 }

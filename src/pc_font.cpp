@@ -1,7 +1,12 @@
+#include "pc_shaderprogram.h"
 #include "pc_font.h"
 #include "common.h"
 #include "filesystem.h"
+<<<<<<< HEAD
 #include "pc_shaderprogram.h"
+=======
+#include <freetype-gl.h>
+>>>>>>> 14924ac5e87c0033170690c5c948eb0127d8e52c
 #include "resource.h"
 #include <freetype-gl.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -136,8 +141,6 @@ bool PC_Font::Init() {
     static size_t i = 0;
     fonts[i] = texture_font_new_from_file(atlas, s, filename);
     texture_font_load_glyphs(fonts[i], alphanum);
-    // TODO
-    // texture_atlas_upload(fonts[i]->atlas);
     ++i;
   }
   {
@@ -152,8 +155,10 @@ bool PC_Font::Init() {
 
 
   texture_font_t *font = fonts[1];
-
-  glGenVertexArrays(1, &gVBO);
+  auto prog = Storage<ShaderProgram>::Get("2dfont");
+  CheckGL();
+  glUseProgram(prog->program);
+  glGenVertexArrays(1,&gVAO);
   glBindVertexArray(gVAO);
   glGenBuffers(1, &gVBO);
   glBindBuffer(GL_ARRAY_BUFFER, gVBO);
@@ -166,8 +171,6 @@ bool PC_Font::Init() {
   glBindBuffer(GL_ARRAY_BUFFER, NULL);
   glGenBuffers(1, &gIBO);
   glBindVertexArray(NULL);
-
-  Storage<ShaderProgram>::Get("2dfont");
   CheckGL();
   return false;
 }
@@ -210,7 +213,7 @@ void PC_Font::Render() {
   glBindTexture(GL_TEXTURE_2D, atlas->id);
   CheckGL();
 
-  const auto t = glGetUniformLocation(prog, "texture");
+  const auto t = glGetUniformLocation(prog, "font_texture");
   if (t != -1) {
     glUniform1i(t, 0);
   }

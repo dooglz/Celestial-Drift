@@ -1,7 +1,7 @@
 #pragma once
 #include "component_shipdriver.h"
-#include "entity.h"
-#include <glm\glm.hpp>
+#include "Entity.h"
+#include <glm/glm.hpp>
 
 bool Collide(const glm::vec3 &sphereCenter, const float radius, const glm::vec3 *vertices, const glm::mat4 &mm,
              glm::vec3 &point, glm::vec3 &resultNormal, float &depth);

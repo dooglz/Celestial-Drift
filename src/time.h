@@ -18,7 +18,7 @@ std::string NowIsoString();
 std::string NowDateTimeString();
 std::string NowTimeString();
 
-#if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
+#if  defined(_PLATFORM_WIN32)
 struct HighResClock {
   typedef long long rep;
   typedef std::nano period;

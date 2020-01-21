@@ -1,7 +1,7 @@
-#version 430
+#version 410
 
 in vec3 vp;
-layout(location = 0)uniform mat4 PV;
+uniform mat4 PV;
 out vec3 texcoords;
 
 void main () {

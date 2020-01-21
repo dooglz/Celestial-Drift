@@ -3,7 +3,7 @@
 #include "common.h"
 #include "component.h"
 #include <glm/gtx/quaternion.hpp>
-#include <glm\glm.hpp>
+#include <glm/glm.hpp>
 
 namespace Components {
 

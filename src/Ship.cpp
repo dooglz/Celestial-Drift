@@ -3,7 +3,7 @@
 #include "component_powerup.h"
 #include "component_track.h"
 #include "component_player_shipdriver.h"
-#include "entity.h"
+#include "Entity.h"
 #include "ship.h"
 
 void BuildShipPlayer(Entity *ent) {
