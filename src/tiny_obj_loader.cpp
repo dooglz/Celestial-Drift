@@ -1264,4 +1264,4 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
   return true;
 }
 
-} // namespace
+} // namespace tinyobj

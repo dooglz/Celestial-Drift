@@ -2,7 +2,7 @@
 #include "font.h"
 #include "gamelogic.h"
 #include <iostream>
-#if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
+#if defined(_PLATFORM_X64) || defined(WIN32)
 #include "pc_menu.h"
 #include "pc_video.h"
 #elif defined(_PLATFORM_PS4)

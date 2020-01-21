@@ -1,11 +1,11 @@
 #include "component_camera.h"
 #include "CommandParser.h"
 #include "Entity.h"
+#include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/quaternion.hpp"
 #include "glm/gtx/euler_angles.hpp"
 #include "glm/gtx/quaternion.hpp"
-#include "glm/glm.hpp"
 #include <glm/gtx/transform.hpp>
 
 Components::CmCamera::CmCamera() : Component("Camera") {}
@@ -18,7 +18,7 @@ glm::mat4 Components::CmCamera::getViewMatrix() {
   return glm::lookAt(Ent_->GetPosition(), // Camera is at (4,3,-3), in World Space
                      glm::vec3(0, 0, 0),  // and looks at the origin
                      glm::vec3(0, 1, 0)   // Head is up (set to 0,-1,0 to look upside-down)
-                     );
+  );
 }
 
 // followcamera setup
@@ -33,7 +33,7 @@ glm::mat4 Components::FollowCamera::getViewMatrix() {
   return glm::lookAt(lastpos_,
                      Ent_->GetPosition() + (f * 10.0f), // and looks at the origin
                      glm::vec3(0, 1, 0)                 // Head is up (set to 0,-1,0 to look upside-down)
-                     );
+  );
 }
 
 void Components::FollowCamera::Update(double delta) {

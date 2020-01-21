@@ -9,7 +9,7 @@
 #include <thread>
 #include <vector>
 
-#if defined(_PLATFORM_WIN32)
+#if defined(WIN32)
 #include <conio.h>
 #elif defined(_PLATFORM_PS4)
 #endif
@@ -160,7 +160,7 @@ static bool parser_is_go;
 static std::mutex mtx;
 
 static void ParseThread() {
-#if defined(_PLATFORM_WIN32)
+#if defined(WIN32)
   while (true) {
     mtx.lock();
     if (!parser_is_go) {
@@ -202,7 +202,7 @@ bool CommandParser::Cmd_Bind(const std::vector<std::string> &params) {
 
 std::thread first;
 void CommandParser::CmdParserStart() {
-#if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
+#if defined(_PLATFORM_X64) || defined(WIN32)
   mtx.lock();
   parser_is_go = true;
   mtx.unlock();
@@ -212,7 +212,7 @@ void CommandParser::CmdParserStart() {
 }
 
 void CommandParser::CmdParserStop() {
-#if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
+#if defined(_PLATFORM_X64) || defined(WIN32)
   mtx.lock();
   parser_is_go = false;
   mtx.unlock();

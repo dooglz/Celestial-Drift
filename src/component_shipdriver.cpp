@@ -128,4 +128,4 @@ void CmShipdriver::Brake(const float &f) {
   }
 }
 void CmShipdriver::Steer(const float &f) { angularAcc_ += vec3(0, angularAcc_factor * f, 0); }
-}
+} // namespace Components

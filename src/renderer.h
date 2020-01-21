@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
+#if defined(_PLATFORM_X64) || defined(WIN32)
 #include "pc_renderer.h"
 class PC_Renderer;
 typedef PC_Renderer Renderer;

@@ -46,8 +46,9 @@ ShaderProgram *ShaderProgram::Load(const std::string &name) {
     // We don't need the shader anymore.
     glDeleteShader(vertexShader);
 
-    // Use the infoLog as you see fit.
-    LOG(logERROR) << name << "  - Vert : " <<infoLog << std::endl;
+    if (maxLength > 0) {
+      LOG(logERROR) << name << "  - Vert : " << infoLog << std::endl;
+    }
 
     // In this simple program, we'll just leave
     return nullptr;
@@ -78,9 +79,9 @@ ShaderProgram *ShaderProgram::Load(const std::string &name) {
     // Either of them. Don't leak shaders.
     glDeleteShader(vertexShader);
 
-    // Use the infoLog as you see fit.
-    LOG(logERROR) << name << "  - frag : " <<infoLog << std::endl;
-
+    if (maxLength > 0) {
+      LOG(logERROR) << name << "  - frag : " << infoLog << std::endl;
+    }
     return nullptr;
   }
 

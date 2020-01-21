@@ -1,7 +1,7 @@
 #pragma once
 #include "common.h"
 
-#if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
+#if defined(_PLATFORM_X64) || defined(WIN32)
 #include "pc_memory.h"
 class PC_Memory;
 typedef PC_Memory MemoryManager;

@@ -1,5 +1,5 @@
-#include "GL/glew.h"
 #include "pc_renderer.h"
+#include "GL/glew.h"
 #include "TextureManager.h"
 #include "common.h"
 #include "component_camera.h"
@@ -38,7 +38,6 @@ bool PC_Renderer::Init() {
   glEnable(GL_DEPTH_TEST);
   CheckGL();
 
-
   ResetProjectionMatrix();
   CheckGL();
 
@@ -58,12 +57,9 @@ void PC_Renderer::DrawLine(const glm::vec3 &p1, const glm::vec3 &p2, const glm::
   linebuffer.push_back(std::make_pair(p2, col2));
 }
 
-
-void PC_Renderer::SetProjectionMAtrix(const glm::mat4 &vm){
-	ps_ = vm;
-}
- void PC_Renderer::ResetProjectionMatrix(){
-	 ps_ = glm::perspective(glm::radians(45.0f), (float)DEFAULT_RESOLUTION_X / (float)DEFAULT_RESOLUTION_Y, 0.1f, 1000.0f);
+void PC_Renderer::SetProjectionMAtrix(const glm::mat4 &vm) { ps_ = vm; }
+void PC_Renderer::ResetProjectionMatrix() {
+  ps_ = glm::perspective(glm::radians(45.0f), (float)DEFAULT_RESOLUTION_X / (float)DEFAULT_RESOLUTION_Y, 0.1f, 1000.0f);
 }
 
 void PC_Renderer::SetViewMatrix(const glm::mat4 &vpm) {
@@ -235,8 +231,8 @@ void PC_Renderer::RenderSkybox() {
   const auto t = glGetUniformLocation(prog->program, "PV");
   if (t != -1) {
     glUniformMatrix4fv(t, 1, GL_FALSE, glm::value_ptr(vps_));
-  }else{
-    //BAAH
+  } else {
+    // BAAH
   }
 
   CheckGL();
@@ -293,7 +289,7 @@ void PC_Renderer::LoadMesh(Mesh *msh) {
                           GL_FALSE,     // normalised
                           sizeof(vec3), // stride
                           NULL          // pointer/offset
-                          );
+    );
     CheckGL();
   }
 
@@ -312,7 +308,7 @@ void PC_Renderer::LoadMesh(Mesh *msh) {
                           GL_TRUE,              // normalised
                           sizeof(unsigned int), // stride
                           NULL                  // pointer/offset
-                          );
+    );
     glBindBuffer(GL_ARRAY_BUFFER, NULL);
     CheckGL();
   }
@@ -333,7 +329,7 @@ void PC_Renderer::LoadMesh(Mesh *msh) {
                           GL_FALSE,     // normalised
                           sizeof(vec2), // stride
                           NULL          // pointer/offset
-                          );
+    );
     glBindBuffer(GL_ARRAY_BUFFER, NULL);
     CheckGL();
   }
@@ -392,7 +388,7 @@ void PC_Renderer::ProcessLines() {
                         GL_FALSE,          // normalised
                         sizeof(float) * 7, // stride
                         NULL               // pointer/offset
-                        );
+  );
   CheckGL();
 
   glEnableVertexAttribArray(1);
@@ -402,7 +398,7 @@ void PC_Renderer::ProcessLines() {
                         GL_TRUE,                      // normalised
                         sizeof(float) * 7,            // stride
                         (GLvoid *)(sizeof(float) * 3) // pointer/offset
-                        );
+  );
   CheckGL();
 
   if (Storage<ShaderProgram>::Get("basic") == nullptr) {

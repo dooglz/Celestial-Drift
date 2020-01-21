@@ -35,18 +35,13 @@ bool PC_Sound::Init() {
   aa = fileIO::SearchDirsPath("bump.ogg");
   result = fmsystem->createSound(aa.c_str(), FMOD_DEFAULT, 0, &sound2);
   result = sound2->setMode(FMOD_LOOP_OFF);
-  //result = system->playSound(sound2, 0, false, &channel);
+  // result = system->playSound(sound2, 0, false, &channel);
   return true;
 }
 
-void PC_Sound::bump(){
-	fmsystem->playSound(sound2, 0, false, &channel);
+void PC_Sound::bump() { fmsystem->playSound(sound2, 0, false, &channel); }
 
-}
-
-void PC_Sound::Update(double delta) {
-
-}
+void PC_Sound::Update(double delta) {}
 
 bool PC_Sound::Shutdown() { return false; }
 #endif

@@ -1,7 +1,7 @@
 #include "pc_video.h"
 #include "GL/glew.h"
-#include "common.h"
 #include "PC_Renderer.h"
+#include "common.h"
 #include <GLFW/glfw3.h>
 
 unsigned int PC_Video::FB_SIZE_X = DEFAULT_RESOLUTION_X;
@@ -9,15 +9,15 @@ unsigned int PC_Video::FB_SIZE_Y = DEFAULT_RESOLUTION_Y;
 
 GLFWwindow *PC_Video::window_;
 
-void PC_Video::SplitviewPort(const unsigned int total, const unsigned int active){
-	if (total <= 1){
-		glViewport(0, 0, FB_SIZE_X, FB_SIZE_Y);
-		return;
-	}
-	if (total == 2){
-		glViewport(0, active*(FB_SIZE_Y / 2), FB_SIZE_X, (FB_SIZE_Y / 2));
-	}
-	return;
+void PC_Video::SplitviewPort(const unsigned int total, const unsigned int active) {
+  if (total <= 1) {
+    glViewport(0, 0, FB_SIZE_X, FB_SIZE_Y);
+    return;
+  }
+  if (total == 2) {
+    glViewport(0, active * (FB_SIZE_Y / 2), FB_SIZE_X, (FB_SIZE_Y / 2));
+  }
+  return;
 }
 
 void PC_Video::Resize(GLFWwindow *window, int width, int height) {
@@ -42,15 +42,14 @@ bool PC_Video::Init() {
 
 #ifdef __APPLE__
   /* We need to explicitly ask for a 3.2 context on OS X */
-  glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 1);
-  //glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-  glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+  // glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #endif
 
   /* Create a windowed mode window and its OpenGL context */
   window_ = glfwCreateWindow(DEFAULT_RESOLUTION, GAME_NAME.c_str(), NULL, NULL);
-
 
   FB_SIZE_X = DEFAULT_RESOLUTION_X;
   FB_SIZE_Y = DEFAULT_RESOLUTION_Y;
@@ -68,9 +67,9 @@ bool PC_Video::Init() {
   std::cout << "GL_VERSION " << glGetString(GL_VERSION) << std::endl;
 
   glfwSetFramebufferSizeCallback(window_, &Resize);
-  int w,h;
-  glfwGetFramebufferSize(window_,&w,&h);
-  Resize(nullptr, w,h);
+  int w, h;
+  glfwGetFramebufferSize(window_, &w, &h);
+  Resize(nullptr, w, h);
   return true;
 }
 bool PC_Video::Shutdown() {

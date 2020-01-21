@@ -5,24 +5,22 @@ static int ttp = 0;
 using namespace std;
 
 namespace Components {
-CmPlayerShipDriver::CmPlayerShipDriver(const unsigned int playerID)
-    : playerID_(playerID), CmShipdriver() {
-  CommandParser::commands.push_back({"player_" + to_string(playerID) + "_accelerate", "", 1,
-                                     [this](const vector<string> &params) {
-
-                                       Accelerate(1.0f);
-                                       return true;
-                                     }});
-  CommandParser::commands.push_back({"player_" + to_string(playerID) + "_steer_left", "", 1,
-                                     [this](const vector<string> &params) {
-                                       Steer(1.0f);
-                                       return true;
-                                     }});
-  CommandParser::commands.push_back({"player_" + to_string(playerID) + "_steer_right", "", 1,
-                                     [this](const vector<string> &params) {
-                                       Steer(-1.0f);
-                                       return true;
-                                     }});
+CmPlayerShipDriver::CmPlayerShipDriver(const unsigned int playerID) : playerID_(playerID), CmShipdriver() {
+  CommandParser::commands.push_back(
+      {"player_" + to_string(playerID) + "_accelerate", "", 1, [this](const vector<string> &params) {
+         Accelerate(1.0f);
+         return true;
+       }});
+  CommandParser::commands.push_back(
+      {"player_" + to_string(playerID) + "_steer_left", "", 1, [this](const vector<string> &params) {
+         Steer(1.0f);
+         return true;
+       }});
+  CommandParser::commands.push_back(
+      {"player_" + to_string(playerID) + "_steer_right", "", 1, [this](const vector<string> &params) {
+         Steer(-1.0f);
+         return true;
+       }});
   CommandParser::commands.push_back(
       {"player_" + to_string(playerID) + "_brake", "", 1, [this](const vector<string> &params) {
          Brake(1.0f);
@@ -42,4 +40,4 @@ CmPlayerShipDriver::CmPlayerShipDriver(const unsigned int playerID)
   }
 }
 CmPlayerShipDriver::~CmPlayerShipDriver() {}
-}
+} // namespace Components

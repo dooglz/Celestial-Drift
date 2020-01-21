@@ -39,4 +39,4 @@ void CmNPCShipDriver::Update(double delta) {
     Accelerate(acc);
   }
 }
-}
+} // namespace Components

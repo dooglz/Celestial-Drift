@@ -33,8 +33,8 @@ Mesh *ParseOBJFile(fileIO::Textfile *tf) {
   std::vector<tinyobj::shape_t> shapes;
   std::vector<tinyobj::material_t> materials;
   string err;
-  //tinyobj::LoadObj(shapes, materials, err, *tf, false);
-  tinyobj::LoadObj(shapes,materials,err,*tf,"",false);
+  // tinyobj::LoadObj(shapes, materials, err, *tf, false);
+  tinyobj::LoadObj(shapes, materials, err, *tf, "", false);
   assert(shapes.size() > 0);
 
   Mesh *pm = new Mesh();

@@ -23,7 +23,7 @@
 #if defined(_WIN64)
 #define _PLATFORM_X64
 #elif defined(_WIN32)
-#define _PLATFORM_WIN32
+#define WIN32
 #endif
 #elif defined(__PSP__)
 #define _PLATFORM_PSP
@@ -39,7 +39,7 @@
 #define _PLATFORM_XBONE
 #endif
 
-#if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
+#if defined(_PLATFORM_X64) || defined(WIN32)
 #include "pc_platform.h"
 class PC_Platform;
 typedef PC_Platform Platform;

@@ -88,4 +88,4 @@ void Render(void *deets, size_t count) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL);
   glBindVertexArray(NULL);
 }
-}
+} // namespace Platform_Menu

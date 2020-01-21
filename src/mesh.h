@@ -5,7 +5,7 @@
 #include <vector>
 //
 
-#if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
+#if defined(_PLATFORM_X64) || defined(WIN32)
 #elif defined(_PLATFORM_PS4)
 #include <gnm.h>
 
@@ -53,7 +53,7 @@ struct Mesh {
   std::vector<uint32_t> indices;
   std::vector<uint32_t> lines;
 
-#if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
+#if defined(_PLATFORM_X64) || defined(WIN32)
   unsigned int gVBO;
   unsigned int gVAO;
   unsigned int gUVBO;

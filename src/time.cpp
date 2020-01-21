@@ -1,7 +1,7 @@
 #include "time.h"
 #include <ctime>
 
-#if defined(_PLATFORM_WIN32)
+#if defined(WIN32)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
@@ -10,7 +10,7 @@ std::string NowIsoString() {
   const std::time_t t = std::time(nullptr);
   char c[28];
   tm tme;
-#if defined(_PLATFORM_WIN32)
+#if defined(WIN32)
   gmtime_s(&tme, &t);
   strftime(c, 28, "%FT%T%z", &tme);
 #elif defined(_PLATFORM_PS4)
@@ -28,7 +28,7 @@ std::string NowDateTimeString() {
   const std::time_t t = std::time(nullptr);
   char c[18];
   tm tme;
-#if defined(_PLATFORM_WIN32)
+#if defined(WIN32)
   gmtime_s(&tme, &t);
   strftime(c, 18, "%y-%m-%d_%T", &tme);
 #elif defined(_PLATFORM_PS4)
@@ -45,7 +45,7 @@ std::string NowTimeString() {
   const std::time_t t = std::time(nullptr);
   char c[9];
   tm tme;
-#if defined(_PLATFORM_WIN32)
+#if defined(WIN32)
   gmtime_s(&tme, &t);
   strftime(c, 9, "%X", &tme);
 #elif defined(_PLATFORM_PS4)
@@ -74,7 +74,7 @@ void Timer::Stop() { end = chrono::high_resolution_clock::now(); }
 const chrono::high_resolution_clock::duration Timer::Duration() { return end - start; }
 unsigned long long Timer::Duration_NS() { return chrono::duration_cast<chrono::nanoseconds>(Duration()).count(); };
 
-#if  defined(_PLATFORM_WIN32)
+#if defined(WIN32)
 namespace {
 const long long g_Frequency = []() -> long long {
   LARGE_INTEGER frequency;

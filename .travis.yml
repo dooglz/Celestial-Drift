@@ -1,0 +1,33 @@
+language: cpp
+sudo: required
+
+matrix:
+  include:
+    - os: linux
+      dist: bionic
+      compiler: clang
+      env: BADGE=linuxclang
+    - os: linux
+      dist: bionic
+      compiler: gcc
+      env: BADGE=linuxgcc
+    - os: osx
+      osx_image: xcode11.3
+      env: BADGE=osx
+    - os: windows
+      env: BADGE=windows
+before_script:
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+      sudo apt-get -qq update;
+      sudo apt-get install -y  libx11-xcb-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev;
+   fi
+script:
+  - mkdir -p build && cd build
+  - if [ "$TRAVIS_OS_NAME" == "windows" ]; then 
+      cmake -A x64 .. ;
+      cmake --build . --target celestial_drift_BUILD_AUDIO --config Release; 
+   fi
+  - if [ "$TRAVIS_OS_NAME" != "windows" ]; then 
+     cmake .. ; 
+     cmake --build . --target celestial_drift_BUILD_AUDIO --config Release -- -j4; 
+   fi

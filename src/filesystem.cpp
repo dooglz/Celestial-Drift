@@ -2,8 +2,8 @@
 #include "assert.h"
 #include <algorithm>
 #include <fstream>
-#include <vector>
 #include <stdio.h>
+#include <vector>
 
 using namespace std;
 
@@ -81,7 +81,7 @@ BinaryFile *BinaryFile::Load(const std::string &name) {
   inFile.close();
   bf->data = new char[buffer.size()];
 
-#if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
+#if defined(_PLATFORM_X64) || defined(WIN32)
   std::copy(buffer.begin(), buffer.end(), bf->data);
 #elif defined(_PLATFORM_PS4)
   std::copy(buffer.begin(), buffer.end(), bf->data);
@@ -201,4 +201,4 @@ bool FileExists(const std::string &name) {
   }
   return false;
 }
-}
+} // namespace fileIO

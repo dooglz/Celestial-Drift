@@ -14,7 +14,7 @@
 
 #define GAME_NAME (std::string("CelestialDrift ") + GIT_HASH)
 
-#if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
+#if defined(_PLATFORM_X64) || defined(WIN32)
 
 #define _RENDER_LIB_OGL
 #define _INPUT_LIB_GLFW

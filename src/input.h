@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
+#if defined(_PLATFORM_X64) || defined(WIN32)
 #include "pc_input.h"
 class PC_Input;
 typedef PC_Input Input;
