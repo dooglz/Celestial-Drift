@@ -1,41 +1,7 @@
-cmake_minimum_required(VERSION 3.5.2)
-message(${CMAKE_GENERATOR})
-project(celestial_drift)
+cmake_minimum_required (VERSION 3.12)
+project (celestial_drift VERSION 1.0 LANGUAGES CXX)
 
-SET(OUTPUT_DIRECTORY "bin/")
-if(MSVC)
-	if(${CMAKE_CL_64})
-		SET(PLATFORM "x64")
-		SET(REDISTS "redist/windows" "redist/x64")
-	else(${CMAKE_CL_64})
-		SET(PLATFORM "win32")
-		SET(REDISTS "redist/windows" "redist/win32")
-	endif(${CMAKE_CL_64})
-else(MSVC)
-	SET(PLATFORM "other")
-	SET(REDISTS "redist/other")
-endif(MSVC)
 
- message("platform is " ${PLATFORM})
- 
-foreach (config ${CMAKE_CONFIGURATION_TYPES})
-    string (TOUPPER ${config} config)
-    set_target_properties(${_project} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}"
-        ARCHIVE_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}"
-        LIBRARY_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}"
-        #PDB_OUTPUT_DIRECTORY_${config} ${sym_path}
-        VS_INTERMEDIATE_DIRECTORY_${config} "temp"
-    )
-	SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}")
-	SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}")
-	SET( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}")
-	SET( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}")
-	SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}")
-	SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${config} "${OUTPUT_DIRECTORY}/${PLATFORM}/${config}")
-	SET( VS_INTERMEDIATE_DIRECTORY_${config} "temp/${config}")
-	
-endforeach ()
 
 
 ###############################################################################
@@ -51,77 +17,104 @@ file(GLOB_RECURSE shaders resources/shaders/ogl/*.vert resources/shaders/ogl/*.f
 ## target definitions #########################################################
 ###############################################################################
 
+
+
 add_executable(celestial_drift_main ${sources} ${shaders})
+target_compile_features(celestial_drift_main PUBLIC cxx_std_17)
+set_target_properties(celestial_drift_main PROPERTIES CXX_EXTENSIONS ON)
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "celestial_drift_main" )
+set_target_properties(celestial_drift_main PROPERTIES RUNTIME_OUTPUT_DIRECTORY $<CONFIG>)
+
+set_target_properties(celestial_drift_main PROPERTIES 
+	VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:celestial_drift_main>"
+	VS_DEBUGGER_COMMAND           "$<TARGET_FILE:celestial_drift_main>"
+	VS_DEBUGGER_ENVIRONMENT       "PATH=%PATH%;${CMAKE_PREFIX_PATH}/bin"
+)
+
+
 SOURCE_GROUP("Shaders" FILES ${shaders})
-add_custom_command(TARGET celestial_drift_main POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${REDISTS}
-        $<TARGET_FILE_DIR:celestial_drift_main>)
+
+#add_custom_command(TARGET celestial_drift_main POST_BUILD
+#    COMMAND ${CMAKE_COMMAND} -E copy_directory
+#        ${REDISTS}
+#        $<TARGET_FILE_DIR:celestial_drift_main>
+#)
 add_custom_command(TARGET celestial_drift_main POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         resources
-        $<TARGET_FILE_DIR:celestial_drift_main>/resources)	
+        $<TARGET_FILE_DIR:celestial_drift_main>/resources
+)
+
 if(MSVC)
 #MultiThreaded build for that speedy compilation
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-else(MSVC)
-	include(CheckCXXCompilerFlag)
-	CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-	CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-	if(COMPILER_SUPPORTS_CXX11)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-	elseif(COMPILER_SUPPORTS_CXX0X)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-	else()
-		message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-	endif(COMPILER_SUPPORTS_CXX11)
 endif(MSVC)
 
+
+add_subdirectory(deps/glfw EXCLUDE_FROM_ALL)
+add_subdirectory(deps/freetype EXCLUDE_FROM_ALL)
+set(freetype-gl_BUILD_DEMOS OFF CACHE BOOL "" FORCE)
+set(freetype-gl_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(freetype-gl_BUILD_APIDOC OFF CACHE BOOL ""  FORCE)
+add_subdirectory(deps/freetype-gl EXCLUDE_FROM_ALL)
+add_subdirectory(deps/glm EXCLUDE_FROM_ALL)
+add_subdirectory(deps/glew/build/cmake EXCLUDE_FROM_ALL)
+
+#target_include_directorie, but marks libs as SYSTEM, so no warnings are shown for them
+function(target_link_libraries_system target)
+  set(libs ${ARGN})
+  foreach(lib ${libs})
+    get_target_property(lib_include_dirs ${lib} INTERFACE_INCLUDE_DIRECTORIES)
+    target_include_directories(${target} SYSTEM PRIVATE ${lib_include_dirs})
+    target_link_libraries(${target} SYSTEM ${lib})
+  endforeach(lib)
+endfunction(target_link_libraries_system)
+target_link_libraries_system (celestial_drift_main glfw glm::glm)
+
+
+option(celestial_drift_BUILD_AUDIO "Build audio" OFF)
+if(celestial_drift_BUILD_AUDIO)
+#todo fmod
+endif()
+
 # this lets me include files relative to the root src dir with a <> pair
-target_include_directories(celestial_drift_main PUBLIC "include")
+#target_include_directories(celestial_drift_main PUBLIC "include")
 
-link_directories("${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/${config}")
-set(LIB_SEARCH_PATH "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/Release/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/Debug/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/" )
+#link_directories("${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/${config}")
+#set(LIB_SEARCH_PATH "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/Release/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/Debug/" "${CMAKE_SOURCE_DIR}/lib/${PLATFORM}/" )
 
-set(VSVER "")
-if(${CMAKE_GENERATOR} STREQUAL "Visual Studio 12 2013 Win64")
-	set(VSVER "_vs13")
-elseif(${CMAKE_GENERATOR} STREQUAL "Visual Studio 14 2015 Win64")
-	set(VSVER "_vs13")
-endif(${CMAKE_GENERATOR} STREQUAL "Visual Studio 12 2013 Win64")
+#set(LIBS2 "glfw3${VSVER}" "glew32" "freetype${VSVER}" "freetype-gl${VSVER}" "fmod" "FreeImage")
 
-set(LIBS2 "glfw3${VSVER}" "glew32" "freetype${VSVER}" "freetype-gl${VSVER}" "fmod" "FreeImage")
-
-foreach(loop_var ${LIBS2})
-message (${loop_var})
- set(FOUND_LIB "FOUND_LIB-NOTFOUND")
- find_library (FOUND_LIB 
-   ${loop_var}
-  PATHS 
-	${LIB_SEARCH_PATH}
-  NO_DEFAULT_PATH)
- message(${FOUND_LIB})
- TARGET_LINK_LIBRARIES(celestial_drift_main ${FOUND_LIB})
-endforeach(loop_var)
+#foreach(loop_var ${LIBS2})
+#message (${loop_var})
+# set(FOUND_LIB "FOUND_LIB-NOTFOUND")
+# find_library (FOUND_LIB 
+#   ${loop_var}
+#  PATHS 
+#	${LIB_SEARCH_PATH}
+#  NO_DEFAULT_PATH)
+# message(${FOUND_LIB})
+# TARGET_LINK_LIBRARIES(celestial_drift_main ${FOUND_LIB})
+#endforeach(loop_var)
  
 target_compile_definitions(celestial_drift_main PRIVATE GLEW_STATIC)
 
-TARGET_LINK_LIBRARIES(celestial_drift_main "opengl32") 
+#TARGET_LINK_LIBRARIES(celestial_drift_main "opengl32") 
 
-exec_program(
-    "git"
-    ${CMAKE_SOURCE_DIR}
-    ARGS " log -n 1 --format=format:\"%h\""
-    OUTPUT_VARIABLE GITHASH 
-)
-
-exec_program(
-    "git"
-    ${CMAKE_SOURCE_DIR}
-    ARGS " log -n 1 --format=format:\"%ai\""
-    OUTPUT_VARIABLE GITDATE
-)
-
-target_compile_definitions(celestial_drift_main PUBLIC  GIT_HASH="${GITHASH}")
-target_compile_definitions(celestial_drift_main PUBLIC  GIT_DATE="${GITDATE}")
+# exec_program(
+#     "git"
+#     ${CMAKE_SOURCE_DIR}
+#     ARGS " log -n 1 --format=format:\"%h\""
+#     OUTPUT_VARIABLE GITHASH 
+# )
+# 
+# exec_program(
+#     "git"
+#     ${CMAKE_SOURCE_DIR}
+#     ARGS " log -n 1 --format=format:\"%ai\""
+#     OUTPUT_VARIABLE GITDATE
+# )
+# 
+# target_compile_definitions(celestial_drift_main PUBLIC  GIT_HASH="${GITHASH}")
+# target_compile_definitions(celestial_drift_main PUBLIC  GIT_DATE="${GITDATE}")
 

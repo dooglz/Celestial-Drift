@@ -8,7 +8,9 @@
 #include "component_player_shipdriver.h"
 #include "component_shipdriver.h"
 #include "component_track.h"
+#ifdef SOUND
 #include "pc_sound.h"
+#endif
 #include "entity.h"
 #include "filesystem.h"
 #include "gamelogic.h"
@@ -62,18 +64,18 @@ bool GameLogic::Init() {
 }
 
 void ToggleMP() {
-   multiplayer = !multiplayer;
+  multiplayer = !multiplayer;
   if (multiplayer) {
     auto &p2 = ships[1];
     p2.RemoveComponent(*p2.getComponent<Components::CmNPCShipDriver>());
     Components::CmPlayerShipDriver *dr2 = new Components::CmPlayerShipDriver(1);
     p2.AddComponent(*dr2);
-	Components::FollowCamera* cam2 = new Components::FollowCamera();
-	p2.AddComponent(*cam2);
+    Components::FollowCamera *cam2 = new Components::FollowCamera();
+    p2.AddComponent(*cam2);
   } else {
     auto &p2 = ships[1];
     p2.RemoveComponent(*p2.getComponent<Components::CmPlayerShipDriver>());
-	p2.RemoveComponent(*p2.getComponent<Components::FollowCamera>());
+    p2.RemoveComponent(*p2.getComponent<Components::FollowCamera>());
     Components::CmNPCShipDriver *dr2 = new Components::CmNPCShipDriver();
     p2.AddComponent(*dr2);
   }
@@ -87,7 +89,6 @@ bool ToggleFly(const std::vector<std::string> &params) {
 bool GameLogic::Run() {
   debugcmra = false;
   const vec3 start = glm::vec3(-7, 8, -30);
-
 
   for (size_t i = 0; i < SHIPCOUNT; i++) {
     int row = (i + 1) % 2;
@@ -123,12 +124,9 @@ bool GameLogic::Run() {
 
   Scene::scene_list.push_back(&trackEnt);
 
-
-  for (size_t i = 0; i < 4; i++)
-  {
-	  BuildPowerup(&powerups[i]);
-	  Scene::scene_list.push_back(&powerups[i]);
-
+  for (size_t i = 0; i < 4; i++) {
+    BuildPowerup(&powerups[i]);
+    Scene::scene_list.push_back(&powerups[i]);
   }
 
   // main menu setup
@@ -172,15 +170,15 @@ bool GameLogic::Run() {
   helpmnu->GetItems()->push_back(helpmnuitm5);
 
   // input
-  CommandParser::commands.push_back({ "toggle_MP", "", 0, [](const vector<string> &params) {
-	  ToggleMP();
-	  return true;
-  } });
+  CommandParser::commands.push_back({"toggle_MP", "", 0, [](const vector<string> &params) {
+                                       ToggleMP();
+                                       return true;
+                                     }});
 
-  CommandParser::commands.push_back({ "toggle_fly", "", 0, [](const vector<string> &params) {
-	  debugcmra = !debugcmra;
-	  return true;
-  } });
+  CommandParser::commands.push_back({"toggle_fly", "", 0, [](const vector<string> &params) {
+                                       debugcmra = !debugcmra;
+                                       return true;
+                                     }});
 
   CommandParser::commands.push_back({"menu_up", "", 0, [](const vector<string> &params) {
                                        Menu::activeMenu->Move(MENU_UP);
@@ -206,14 +204,14 @@ bool GameLogic::Run() {
   CommandParser::Cmd_Bind({"", "menu_enter", "ENTER", ""});
   CommandParser::Cmd_Bind({"", "quit", "ESC", ""});
   CommandParser::Cmd_Bind({"", "toggle_fly", "V", ""});
-  CommandParser::Cmd_Bind({ "", "toggle_MP", "M", "" });
+  CommandParser::Cmd_Bind({"", "toggle_MP", "M", ""});
 
   Renderer::CreateSkybox({"resources/img/bk.jpg", "resources/img/ft.jpg", "resources/img/up.jpg",
                           "resources/img/dn.jpg", "resources/img/lf.jpg", "resources/img/rt.jpg"});
 
-
+#ifdef SOUND
   PC_Sound::Init();
-
+#endif
   auto t = gameclock::now();
   double frametimes[256];
   for (auto &t : frametimes) {
@@ -243,10 +241,10 @@ bool GameLogic::Run() {
       avg = "FPS:" + toStrDecPt(2, davg);
     }
 
-	uint32_t position = 1;
-	uint32_t plapcount = 0;
-	uint32_t position2 = 1;
-	uint32_t plapcount2 = 0;
+    uint32_t position = 1;
+    uint32_t plapcount = 0;
+    uint32_t position2 = 1;
+    uint32_t plapcount2 = 0;
 
     Renderer::ClearColour(glm::vec4(((sin((0.1f * runtime) + 0) * 127.0f) + 50.0f) / 255.0f,
                                     ((sin((0.1f * runtime) + 2) * 127.0f) + 50.0f) / 255.0f,
@@ -300,9 +298,11 @@ bool GameLogic::Run() {
           vec3 resultNormal;
           float depth;
           if (Collide(ships[i].GetPosition(), 1.0f, ships[j].GetPosition(), 1.0f, point, resultNormal, depth)) {
-			  if(i == 0 || j == 0){
-				  PC_Sound::bump();
-			  }
+            if (i == 0 || j == 0) {
+#ifdef SOUND
+              PC_Sound::bump();
+#endif
+            }
             //   cout << i << " " << j << tos(point) << tos(resultNormal) << depth << endl;
             std::vector<Component *> cc = ships[i].GetComponents("ShipDriver");
             Resolve(ships[i], *(Components::CmShipdriver *)(cc[0]), resultNormal, depth);
@@ -311,13 +311,13 @@ bool GameLogic::Run() {
       }
 
       plapcount = ((Components::CmShipdriver *)(ships[0].GetComponents("ShipDriver")[0]))->lapcount;
-	  plapcount2 = ((Components::CmShipdriver *)(ships[1].GetComponents("ShipDriver")[0]))->lapcount;
+      plapcount2 = ((Components::CmShipdriver *)(ships[1].GetComponents("ShipDriver")[0]))->lapcount;
       const uint32_t pwaypointIndex =
           ((Components::CmShipdriver *)(ships[0].GetComponents("ShipDriver")[0]))->waypointIndex;
-	  const uint32_t pwaypointIndex2 =
-		  ((Components::CmShipdriver *)(ships[1].GetComponents("ShipDriver")[0]))->waypointIndex;
+      const uint32_t pwaypointIndex2 =
+          ((Components::CmShipdriver *)(ships[1].GetComponents("ShipDriver")[0]))->waypointIndex;
       position = 1;
-	  position2 = 1;
+      position2 = 1;
       for (size_t i = 1; i < SHIPCOUNT; i++) {
         const uint32_t lapcount = ((Components::CmShipdriver *)(ships[i].GetComponents("ShipDriver")[0]))->lapcount;
         if (lapcount > plapcount) {
@@ -329,17 +329,15 @@ bool GameLogic::Run() {
             ++position;
           }
         }
-		if (lapcount > plapcount2) {
-			++position2;
-		}
-		else if (lapcount == plapcount2) {
-			const uint32_t waypointIndex =
-				((Components::CmShipdriver *)(ships[i].GetComponents("ShipDriver")[0]))->waypointIndex;
-			if (waypointIndex > pwaypointIndex2) {
-				++position2;
-			}
-		}
-
+        if (lapcount > plapcount2) {
+          ++position2;
+        } else if (lapcount == plapcount2) {
+          const uint32_t waypointIndex =
+              ((Components::CmShipdriver *)(ships[i].GetComponents("ShipDriver")[0]))->waypointIndex;
+          if (waypointIndex > pwaypointIndex2) {
+            ++position2;
+          }
+        }
       }
       Font::Draw(25, versionText.c_str(), {300, 30}, {1.0f, 1.0f, 0, 1.0f});
       Font::Draw(25, avg.c_str(), {100, 30}, {0.2f, 0, 0, 1.0f});
@@ -349,71 +347,70 @@ bool GameLogic::Run() {
     GroundPlane::Update();
     Renderer::PreRender();
 
-	if (multiplayer) {
-		PC_Video::SplitviewPort(2, 0);
-		PC_Renderer::SetProjectionMAtrix(glm::perspective(glm::radians(45.0f), (float)DEFAULT_RESOLUTION_X / (((float)DEFAULT_RESOLUTION_Y)*0.5f), 0.1f, 1000.0f));
-		Scene::SetActiveCamera(ships[0].getComponent<Components::FollowCamera>());
-		Scene::Render(delta);
-		PC_Renderer::RenderSkybox();
-		if (racestate == RUNNING){
-			stringstream strs;
-			strs << "Position: " << position2;
-			Font::Draw(25, strs.str().c_str(), { 100, 100 }, { 0.9f, 0.2f, 0.2f, 1.0f });
-			strs.str("");
-			strs << "Lap: " << plapcount2;
-			Font::Draw(25, strs.str().c_str(), { 100, 150 }, { 0.9f, 0.2f, 0.2f, 1.0f });
-		}
-		PC_Video::SplitviewPort(2, 1);
-		Scene::SetActiveCamera(ships[1].getComponent<Components::FollowCamera>());
-		Scene::Render(delta);
-		PC_Renderer::RenderSkybox();
-		if (racestate == RUNNING){
-			stringstream strs;
-			strs << "Position: " << position;
-			Font::Draw(25, strs.str().c_str(), { 100, 500 }, { 0.9f, 0.2f, 0.2f, 1.0f });
-			strs.str("");
-			strs << "Lap: " << plapcount;
-			Font::Draw(25, strs.str().c_str(), { 100, 550 }, { 0.9f, 0.2f, 0.2f, 1.0f });
-		}
-		PC_Video::SplitviewPort(0, 0);
-		PC_Renderer::ResetProjectionMatrix();
-	}
-	else{
-		PC_Video::SplitviewPort(0, 0);
-		PC_Renderer::ResetProjectionMatrix();
-		Scene::SetActiveCamera(ships[0].getComponent<Components::FollowCamera>());
-		Scene::Render(delta);
-		PC_Renderer::RenderSkybox();
-		if (racestate == RUNNING){
-			stringstream strs;
-			strs << "Position: " << position;
-			Font::Draw(25, strs.str().c_str(), { 100, 100 }, { 0.9f, 0.2f, 0.2f, 1.0f });
-			strs.str("");
-			strs << "Lap: " << plapcount;
-			Font::Draw(25, strs.str().c_str(), { 100, 150 }, { 0.9f, 0.2f, 0.2f, 1.0f });
-		}
-	}
+    if (multiplayer) {
+      PC_Video::SplitviewPort(2, 0);
+      PC_Renderer::SetProjectionMAtrix(glm::perspective(
+          glm::radians(45.0f), (float)DEFAULT_RESOLUTION_X / (((float)DEFAULT_RESOLUTION_Y) * 0.5f), 0.1f, 1000.0f));
+      Scene::SetActiveCamera(ships[0].getComponent<Components::FollowCamera>());
+      Scene::Render(delta);
+      PC_Renderer::RenderSkybox();
+      if (racestate == RUNNING) {
+        stringstream strs;
+        strs << "Position: " << position2;
+        Font::Draw(25, strs.str().c_str(), {100, 100}, {0.9f, 0.2f, 0.2f, 1.0f});
+        strs.str("");
+        strs << "Lap: " << plapcount2;
+        Font::Draw(25, strs.str().c_str(), {100, 150}, {0.9f, 0.2f, 0.2f, 1.0f});
+      }
+      PC_Video::SplitviewPort(2, 1);
+      Scene::SetActiveCamera(ships[1].getComponent<Components::FollowCamera>());
+      Scene::Render(delta);
+      PC_Renderer::RenderSkybox();
+      if (racestate == RUNNING) {
+        stringstream strs;
+        strs << "Position: " << position;
+        Font::Draw(25, strs.str().c_str(), {100, 500}, {0.9f, 0.2f, 0.2f, 1.0f});
+        strs.str("");
+        strs << "Lap: " << plapcount;
+        Font::Draw(25, strs.str().c_str(), {100, 550}, {0.9f, 0.2f, 0.2f, 1.0f});
+      }
+      PC_Video::SplitviewPort(0, 0);
+      PC_Renderer::ResetProjectionMatrix();
+    } else {
+      PC_Video::SplitviewPort(0, 0);
+      PC_Renderer::ResetProjectionMatrix();
+      Scene::SetActiveCamera(ships[0].getComponent<Components::FollowCamera>());
+      Scene::Render(delta);
+      PC_Renderer::RenderSkybox();
+      if (racestate == RUNNING) {
+        stringstream strs;
+        strs << "Position: " << position;
+        Font::Draw(25, strs.str().c_str(), {100, 100}, {0.9f, 0.2f, 0.2f, 1.0f});
+        strs.str("");
+        strs << "Lap: " << plapcount;
+        Font::Draw(25, strs.str().c_str(), {100, 150}, {0.9f, 0.2f, 0.2f, 1.0f});
+      }
+    }
     // GroundPlane::Render(player.GetPosition().x, player.GetPosition().z);
 
-	// rendering choice
-	if (inMenu) {
-		if (helpselect == true) {
-			helpmnu->Render();
-		}
-		else {
-			mnu->Render();
-		}
-	}
+    // rendering choice
+    if (inMenu) {
+      if (helpselect == true) {
+        helpmnu->Render();
+      } else {
+        mnu->Render();
+      }
+    }
 
-	if (controlselect == true) {
-		string controls;
-		for (auto &it : actual_Input_builtins) {
-			for (auto &b : it.bindings) {
-				controls += std::string(b) + ", " + std::string(it.name) + '\n';
-			}
-		}
-		Font::Draw(25, controls.c_str(), { 400, 400 }, { 0.2f, 1.0f, 0, 1.0f });
-	}
+    if (controlselect == true) {
+      string controls;
+      for (auto &it : actual_Input_builtins) {
+        for (auto &b : it.bindings) {
+          controls += std::string(b) + ", " + std::string(it.name) + '\n';
+        }
+      }
+      Font::Draw(25, controls.c_str(), {400, 400}, {0.2f, 1.0f, 0, 1.0f});
+    }
 
     Font::Render();
     Renderer::PostRender();
