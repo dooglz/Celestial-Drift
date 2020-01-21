@@ -9,9 +9,10 @@
 #ifndef TextureManager_H
 #define TextureManager_H
 
-
+#ifdef _win32
 #include <windows.h>
-#include <gl/gl.h>
+#endif
+#include <GL/glew.h>
 #include <stb_image.h>
 #include <map>
 class TextureManager {

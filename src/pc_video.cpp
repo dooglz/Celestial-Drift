@@ -37,10 +37,21 @@ bool PC_Video::Init() {
 
   glfwWindowHint(GLFW_RESIZABLE, 0);
   glfwWindowHint(GLFW_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+
+#ifdef __APPLE__
+  /* We need to explicitly ask for a 3.2 context on OS X */
+  glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 1);
+  //glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+  glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#endif
+
   /* Create a windowed mode window and its OpenGL context */
   window_ = glfwCreateWindow(DEFAULT_RESOLUTION, GAME_NAME.c_str(), NULL, NULL);
+
+
   FB_SIZE_X = DEFAULT_RESOLUTION_X;
   FB_SIZE_Y = DEFAULT_RESOLUTION_Y;
   if (!window_) {
@@ -54,8 +65,12 @@ bool PC_Video::Init() {
   glfwSwapInterval(0);
   glewInit();
 
-  glfwSetFramebufferSizeCallback(window_, &Resize);
+  std::cout << "GL_VERSION " << glGetString(GL_VERSION) << std::endl;
 
+  glfwSetFramebufferSizeCallback(window_, &Resize);
+  int w,h;
+  glfwGetFramebufferSize(window_,&w,&h);
+  Resize(nullptr, w,h);
   return true;
 }
 bool PC_Video::Shutdown() {

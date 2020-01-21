@@ -1,17 +1,22 @@
 #pragma once
 #include "common.h"
-#if defined(_MATH_LIB_GLM)
 #include "glm/glm.hpp"
 #include "glm/gtc/quaternion.hpp"
 using namespace glm;
+
+/*#if defined(_MATH_LIB_GLM)
+#include "glm/glm.hpp"
+#include "glm/gtc/quaternion.hpp"
+//using namespace glm;
 //#define Quaternion glm::quat
 #elif defined(_MATH_LIB_DXM)
 
 #elif defined(_MATH_LIB_PS4)
 #include "glm/glm.hpp"
 #include "glm/gtc/quaternion.hpp"
-using namespace glm;
+//using namespace glm;
 #endif
+*/
 
 inline int randomColor() {
   int x = rand() & 0xff;
@@ -20,6 +25,9 @@ inline int randomColor() {
   x |= (0xff) << 24;
 
   return x;
+}
+inline unsigned int urandomColor() {
+  return static_cast<unsigned int>(randomColor());
 }
 
 vec3 GetForwardVector(const quat &q);

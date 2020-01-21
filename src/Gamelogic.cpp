@@ -8,10 +8,11 @@
 #include "component_player_shipdriver.h"
 #include "component_shipdriver.h"
 #include "component_track.h"
+
 #ifdef SOUND
 #include "pc_sound.h"
 #endif
-#include "entity.h"
+#include "Entity.h"
 #include "filesystem.h"
 #include "gamelogic.h"
 #include "genericInput.h"

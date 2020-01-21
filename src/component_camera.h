@@ -1,7 +1,7 @@
 #pragma once
 #include "common.h"
 #include "component.h"
-#include "glm\glm.hpp"
+#include "glm/glm.hpp"
 // struct Texture;
 // enum Materials;
 // struct RenderObject;

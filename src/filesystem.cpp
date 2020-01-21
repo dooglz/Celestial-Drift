@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <fstream>
 #include <vector>
+#include <stdio.h>
+
 using namespace std;
 
 namespace fileIO {
@@ -21,7 +23,11 @@ ifstream Searchdirs(const std::string &name) {
   }
   ofstream myfile;
   char e[32];
+#ifdef _win32
   LOG(logERROR) << "File Load Error: " << name << " - " << strerror_s(e, 32, errno);
+#else
+  LOG(logERROR) << "File Load Error: " << name;
+#endif
   assert(false);
   return ifstream();
 }
@@ -35,7 +41,11 @@ const std::string SearchDirsPath(const std::string &name) {
     }
   }
   char e[32];
+#ifdef _win32
   LOG(logERROR) << "File Find Error: " << name << " - " << strerror_s(e, 32, errno);
+#else
+  LOG(logERROR) << "File Load Error: " << name;
+#endif
   assert(false);
   return "";
 }
@@ -88,7 +98,12 @@ BinaryFile *BinaryFile::Load(const std::string &name) {
     bool retValue = false;
 
     FILE *fp;
+
+#ifdef _win32
     fopen_s(&fp, filename, "rb");
+#else
+    fp = fopen(filename, "rb");
+#endif
     if (fp) {
       if (!fseek(fp, 0, SEEK_END)) {
         bytes = ftell(fp);

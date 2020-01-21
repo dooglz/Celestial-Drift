@@ -1,4 +1,4 @@
-#include "GL\glew.h"
+#include "GL/glew.h"
 #include "pc_renderer.h"
 #include "TextureManager.h"
 #include "common.h"
@@ -25,13 +25,23 @@ void CheckGL() {
 void PC_Renderer::PostRender() { ProcessLines(); };
 
 bool PC_Renderer::Init() {
+  CheckGL();
+
   // preload basic shaders
   Storage<ShaderProgram>::Get("basic");
+  CheckGL();
+
   glViewport(0, 0, DEFAULT_RESOLUTION);
+  CheckGL();
   glDepthFunc(GL_LESS);
+  CheckGL();
   glEnable(GL_DEPTH_TEST);
-  glEnable(GL_TEXTURE_2D);
+  CheckGL();
+
+
   ResetProjectionMatrix();
+  CheckGL();
+
   return false;
 }
 
@@ -222,26 +232,32 @@ void PC_Renderer::RenderSkybox() {
   glUseProgram(prog->program);
   CheckGL();
 
-  glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(vps_));
+  const auto t = glGetUniformLocation(prog->program, "PV");
+  if (t != -1) {
+    glUniformMatrix4fv(t, 1, GL_FALSE, glm::value_ptr(vps_));
+  }else{
+    //BAAH
+  }
 
+  CheckGL();
   GLint OldDepthFuncMode;
   glGetIntegerv(GL_DEPTH_FUNC, &OldDepthFuncMode);
 
   glEnable(GL_BLEND);
   glBlendFunc(GL_ONE, GL_ONE_MINUS_DST_COLOR);
-
+  CheckGL();
   glDisable(GL_CULL_FACE);
   glDepthFunc(GL_LEQUAL);
 
   // glDepthMask(GL_FALSE);
   // glDepthFunc(GL_LESS);
-
+  CheckGL();
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_CUBE_MAP, tex_cube);
   glBindBuffer(GL_ARRAY_BUFFER, sbox_vbo);
   glBindVertexArray(sbox_vao);
   glDrawArrays(GL_TRIANGLES, 0, 36);
-
+  CheckGL();
   glEnable(GL_CULL_FACE);
   glDepthFunc(OldDepthFuncMode);
   CheckGL();

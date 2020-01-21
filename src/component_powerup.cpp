@@ -1,4 +1,3 @@
-#pragma once
 #include "component_powerup.h"
 #include "entity.h"
 
