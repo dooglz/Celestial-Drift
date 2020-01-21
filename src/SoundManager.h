@@ -1,3 +1,4 @@
+#ifdef SOUND
 #include "filesystem.h"
 #include "maths.h"
 #include <fmod\fmod.h>
@@ -22,3 +23,4 @@ public:
 
   void *GetPlatformHandle();
 };
+#endif

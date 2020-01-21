@@ -40,6 +40,7 @@ TextureManager::~TextureManager() {
 
 bool TextureManager::LoadTexture(const char *filename, const unsigned int texID, bool generate, GLenum target,
                                  GLenum image_format, GLint internal_format, GLint level, GLint border) {
+  /*
   // image format
   FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
   // pointer to the image, once loaded
@@ -94,7 +95,7 @@ bool TextureManager::LoadTexture(const char *filename, const unsigned int texID,
 
   // Free FreeImage's copy of the data
   FreeImage_Unload(dib);
-
+  */
   // return success
   return true;
 }

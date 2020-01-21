@@ -1,3 +1,4 @@
+#ifdef SOUND
 #include "pc_sound.h"
 #include "common.h"
 #include "filesystem.h"
@@ -48,3 +49,4 @@ void PC_Sound::Update(double delta) {
 }
 
 bool PC_Sound::Shutdown() { return false; }
+#endif

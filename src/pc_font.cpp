@@ -1,7 +1,7 @@
 #include "pc_font.h"
 #include "common.h"
 #include "filesystem.h"
-#include "freetype-gl/freetype-gl.h"
+#include <freetype-gl.h>
 #include "pc_shaderprogram.h"
 #include "resource.h"
 #include <glm/gtc/type_ptr.hpp>
@@ -136,7 +136,8 @@ bool PC_Font::Init() {
     static size_t i = 0;
     fonts[i] = texture_font_new_from_file(atlas, s, filename);
     texture_font_load_glyphs(fonts[i], alphanum);
-    texture_atlas_upload(fonts[i]->atlas);
+    //TODO
+    //texture_atlas_upload(fonts[i]->atlas);
     ++i;
   }
 

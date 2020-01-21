@@ -12,7 +12,7 @@
 
 #include <windows.h>
 #include <gl/gl.h>
-#include "FreeImage.h"
+#include <stb_image.h>
 #include <map>
 class TextureManager {
 public:

@@ -39,11 +39,18 @@ SOURCE_GROUP("Shaders" FILES ${shaders})
 #        ${REDISTS}
 #        $<TARGET_FILE_DIR:celestial_drift_main>
 #)
-add_custom_command(TARGET celestial_drift_main POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        resources
-        $<TARGET_FILE_DIR:celestial_drift_main>/resources
-)
+
+if(APPLE)
+  add_custom_target(copy_resources ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/resources" 
+	${CMAKE_BINARY_DIR}/$<CONFIGURATION>/resources
+  )
+else()
+  add_custom_target(copy_resources ALL 
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/resources" 
+	${CMAKE_BINARY_DIR}/$<CONFIGURATION>/resources
+  )
+endif()
 
 if(MSVC)
 #MultiThreaded build for that speedy compilation
@@ -57,8 +64,11 @@ set(freetype-gl_BUILD_DEMOS OFF CACHE BOOL "" FORCE)
 set(freetype-gl_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(freetype-gl_BUILD_APIDOC OFF CACHE BOOL ""  FORCE)
 add_subdirectory(deps/freetype-gl EXCLUDE_FROM_ALL)
+target_include_directories(freetype-gl INTERFACE deps/freetype-gl)
 add_subdirectory(deps/glm EXCLUDE_FROM_ALL)
-add_subdirectory(deps/glew/build/cmake EXCLUDE_FROM_ALL)
+add_subdirectory(deps/glew/ EXCLUDE_FROM_ALL)
+add_library(stb INTERFACE)
+target_include_directories(stb INTERFACE  ${CMAKE_CURRENT_SOURCE_DIR}/deps/stb)
 
 #target_include_directorie, but marks libs as SYSTEM, so no warnings are shown for them
 function(target_link_libraries_system target)
@@ -66,10 +76,11 @@ function(target_link_libraries_system target)
   foreach(lib ${libs})
     get_target_property(lib_include_dirs ${lib} INTERFACE_INCLUDE_DIRECTORIES)
     target_include_directories(${target} SYSTEM PRIVATE ${lib_include_dirs})
-    target_link_libraries(${target} SYSTEM ${lib})
+    target_link_libraries(${target} ${lib})
   endforeach(lib)
 endfunction(target_link_libraries_system)
-target_link_libraries_system (celestial_drift_main glfw glm::glm)
+target_link_libraries_system (celestial_drift_main glfw glm::glm libglew_static stb freetype freetype-gl)
+#target_link_libraries(celestial_drift_main freetype-gl SYSTEM ${lib})
 
 
 option(celestial_drift_BUILD_AUDIO "Build audio" OFF)
@@ -101,20 +112,20 @@ target_compile_definitions(celestial_drift_main PRIVATE GLEW_STATIC)
 
 #TARGET_LINK_LIBRARIES(celestial_drift_main "opengl32") 
 
-# exec_program(
-#     "git"
-#     ${CMAKE_SOURCE_DIR}
-#     ARGS " log -n 1 --format=format:\"%h\""
-#     OUTPUT_VARIABLE GITHASH 
-# )
-# 
-# exec_program(
-#     "git"
-#     ${CMAKE_SOURCE_DIR}
-#     ARGS " log -n 1 --format=format:\"%ai\""
-#     OUTPUT_VARIABLE GITDATE
-# )
-# 
-# target_compile_definitions(celestial_drift_main PUBLIC  GIT_HASH="${GITHASH}")
-# target_compile_definitions(celestial_drift_main PUBLIC  GIT_DATE="${GITDATE}")
+ exec_program(
+     "git"
+     ${CMAKE_SOURCE_DIR}
+     ARGS " log -n 1 --format=format:\"%h\""
+     OUTPUT_VARIABLE GITHASH 
+ )
+ 
+ exec_program(
+     "git"
+     ${CMAKE_SOURCE_DIR}
+     ARGS " log -n 1 --format=format:\"%ai\""
+     OUTPUT_VARIABLE GITDATE
+ )
+ 
+ target_compile_definitions(celestial_drift_main PUBLIC  GIT_HASH="${GITHASH}")
+ target_compile_definitions(celestial_drift_main PUBLIC  GIT_DATE="${GITDATE}")
 

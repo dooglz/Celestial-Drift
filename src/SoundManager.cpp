@@ -1,3 +1,4 @@
+#ifdef SOUND
 #include "SoundManager.h"
 #include "maths.h"
 
@@ -37,3 +38,4 @@ void shutdown() {
   Soundsystem->close();
   Soundsystem->release();
 }
+#endif SOUND

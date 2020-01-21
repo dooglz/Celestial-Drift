@@ -2,6 +2,7 @@
 #include <ctime>
 
 #if defined(_PLATFORM_X64) || defined(_PLATFORM_WIN32)
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
 
