@@ -113,22 +113,16 @@ target_compile_definitions(celestial_drift_main PUBLIC  GIT_HASH="${GITHASH}")
 target_compile_definitions(celestial_drift_main PUBLIC  GIT_DATE="${GITDATE}")
 target_compile_definitions(celestial_drift_main PUBLIC _PLATFORM_X64)
 
-
-
 #Install directory within build folder, so it doesn't go into /lib or program-files
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install/")
-#Installer.exe/zip built into /installer
 SET(CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}/installer/")
 INCLUDE(InstallRequiredSystemLibraries)
-install(TARGETS celestial_drift_main DESTINATION "bin" CONFIGURATIONS Release COMPONENT celestial_drift_CMPT)
-#Install component for resources
-install(DIRECTORY "${PROJECT_SOURCE_DIR}/resources" DESTINATION "bin/" CONFIGURATIONS Release COMPONENT RESOURCES_CMPT)
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/resources" DESTINATION "bin/")
+INSTALL(TARGETS celestial_drift_main)
 
 #Tell CPack about the libs and resources install components
-set(CPACK_COMPONENTS_ALL ${CPACK_COMPONENTS_ALL} RESOURCES_CMPT celestial_drift_CMPT)
-
 set(CPACK_GENERATOR ZIP)
-set(CPACK_PACKAGE_FILE_NAME ${CMAKE_PROJECT_NAME})
+set(CPACK_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "celestial_drift_main")
 set(CPACK_PACKAGE_VENDOR "Dooglz")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
@@ -138,7 +132,5 @@ set(CPACK_PACKAGE_VERSION_MINOR "1")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
 
 INCLUDE(CPack)
-
-
 
 
